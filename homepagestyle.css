@@ -1,0 +1,18 @@
+/* Fix the buttons to be top right */
+nav {
+  display: flex;
+  justify-content: flex-end; /* Make all buttons shift the right */
+  gap: 10px;
+  padding: 10px; 
+}
+
+.btn-outline-primary {
+  color: black;
+  background-color: white;
+  border-color: black;
+}
+
+.btn-outline-primary:hover {
+  background-color:#AFE1AF;
+  border: black;
+}

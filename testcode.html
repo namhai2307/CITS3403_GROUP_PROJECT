@@ -1,0 +1,43 @@
+<html>
+<head>
+    <style>
+        div.c1 {padding:30px; background-color: rgb(47, 0, 255);}
+        div.c2 {padding:30px; background-color: rgb(156, 14, 149);}
+    </style>
+    <script>
+        function foo() {
+            let x = document.createElement('input');
+            x.type = 'button';
+            x.value = 'Clicked: 0';
+            x.addEventListener('click', run);
+            return x;
+        }
+
+        function run(e) {
+            if (e.target.clicked)
+                e.target.clicked++;
+            else
+                e.target.clicked = 1;
+            e.target.value = 'Clicked: ' + e.target.clicked;
+
+            let y = foo();
+            div.insertBefore(y, e.target);
+            if (e.target.clicked % 2 == 0)
+                div.classList.replace('c2','c1');
+            else
+                div.classList.replace('c1','c2');
+
+            if (e.target.clicked >= 2)
+                e.target.removeEventListener('click', run);
+        }
+
+        window.onload = function() {
+            div = document.getElementById('div');
+            div.appendChild(foo());
+        };
+    </script>
+</head>
+<body>
+    <div id='div' class='c1'></div>
+</body>
+</html>

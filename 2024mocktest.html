@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>People matcher</title>
+    <style>
+        body {
+            background-color: yellow;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-family: "Times New Roman", Times, serif;
+            text-align: center;
+        }
+        .score, .question {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .question span {
+            text-decoration: underline;
+        }
+        .images {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .images img {
+            width: 100px;
+            height: 100px;
+            border: 5px solid green;
+            cursor: pointer;
+        }
+        .images img:hover {
+            border-color: red;
+        }
+    </style>
+    <script>
+        const staff = [
+            { name: "Taylor Swift", img: "https://via.placeholder.com/100?text=Taylor" },
+            { name: "Staff 1", img: "https://via.placeholder.com/100?text=Staff+1" },
+            { name: "Staff 2", img: "https://via.placeholder.com/100?text=Staff+2" },
+            { name: "Staff 3", img: "https://via.placeholder.com/100?text=Staff+3" },
+            { name: "Staff 4", img: "https://via.placeholder.com/100?text=Staff+4" },
+            { name: "Staff 5", img: "https://via.placeholder.com/100?text=Staff+5" },
+            { name: "Staff 6", img: "https://via.placeholder.com/100?text=Staff+6" }
+        ];
+
+        let score = 0;
+        let correctAnswer = null;
+
+        function chooseRandomElements(arr, numElements) {
+            const shuffledArray = arr.slice();
+            for (let i = shuffledArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+            }
+            return shuffledArray.slice(0, numElements);
+        }
+
+        function loadGame() {
+            const randomChoices = chooseRandomElements(staff, 4);
+            correctAnswer = randomChoices[Math.floor(Math.random() * randomChoices.length)];
+
+            document.getElementById("score").textContent = `Current score = ${score}`;
+            document.getElementById("question").innerHTML = `Who is <span>${correctAnswer.name}</span>?`;
+
+            const imagesContainer = document.getElementById("images");
+            imagesContainer.innerHTML = "";
+            randomChoices.forEach(person => {
+                const img = document.createElement("img");
+                img.src = person.img;
+                img.alt = person.name;
+                img.addEventListener("click", () => handleImageClick(person));
+                imagesContainer.appendChild(img);
+            });
+        }
+
+        function handleImageClick(selectedPerson) {
+            if (selectedPerson.name === correctAnswer.name) {
+                score++;
+                loadGame();
+            } else {
+                alert("That was incorrect!");
+                const images = document.querySelectorAll(".images img");
+                images.forEach(img => img.style.pointerEvents = "none");
+            }
+        }
+
+        window.onload = loadGame;
+    </script>
+</head>
+<body>
+    <h1>Who's who: CS edition</h1>
+    <div class="score" id="score">Current score = 0</div>
+    <div class="question" id="question">Who is <span>?</span></div>
+    <div class="images" id="images"></div>
+</body>
+</html>

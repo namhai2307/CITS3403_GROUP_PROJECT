@@ -1,18 +1,13 @@
 import os
- # 加载.env文件
+
+
+basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..')) 
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY') or 'dev-key-123'
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key-123!'
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
-    ALLOWED_EXTENSIONS = {'csv', 'json'}
-    MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB限制
-
-class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'
+    
 
-class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.environ.get('PROD_DB_URL')
     

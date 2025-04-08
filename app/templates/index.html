@@ -7,12 +7,22 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='homepagestyle.css') }}">
+
+  <!-- Local CSS and JS files -->
+  <script src="/Users/dennis/Desktop/UWA Y3S1/CITS3403 Agile Web Development/Project/CITS3403_GROUP_PROJECT/app/static/homepagescript.js"></script>
+  <link rel = "stylesheet" href = "/Users/dennis/Desktop/UWA Y3S1/CITS3403 Agile Web Development/Project/CITS3403_GROUP_PROJECT/app/static/homepagestyle.css">
+
+  <!-- Remove this comment below and local <link href = "/users/dennis..." copy once all design has been implemented -->
+  <!-- Code below is for Flask backend infrastructure to load css styles and redirection page -->
+  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='homepagestyle.css') }}"> --> 
+  <!-- <script src="{{ url_for('static', filename='homepagescript.js') }}"></script> -->
+  
 </head>
 
 <body>
+  <div id = "body"> 
   <!-- Header Text/title -->
-  <div class="d-flex justify-content-between align-items-center p-3">
+  <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
     <header>
       <h5 class ="m-0">🌿 Prodo</h5>
     </header>
@@ -28,23 +38,82 @@
   </div>
 
   <!-- Content Area for Intro, Feature, About, Contact, Footer -->
-  <div class="d-flex justify-content-between align-items-center p-3"></div>
-    <div id ="intro" class = "info-section">
+  <div class="d-flex justify-content-between align-items-center p-3 gap-3"></div>
+
+    <!-- Left Text Box for Intro text -->
+    <div id="intro" class="info-section">
       <h2>Introduction</h2>
-      <p> Welcome to our productivity tracker!</p>
+
+      <!-- Side-by-side container -->
+      <div class="d-flex justify-content-between align-items-start gap-3">
+
+        <!-- Left Text Box -->
+        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
+          <p>Welcome to our productivity tracker!</p>
+        </div>
+
+        <!-- Right Image Box -->
+        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
+          <!-- Placeholder for image here until we get the right image -->
+          <img src="your-image.jpg" alt="Intro Image" class="img-fluid rounded" />
+        </div>
+
+      </div>
     </div>
 
-    <div id ="features" class ="info-section">
+    <div id="features" class="info-section">
       <h2>Features</h2>
-      <p> These are some example features</p>
-      <ul>
-        <li>To Do lists</li>
-        <li>Calendar Tracker of Gym</li>
-        <li>Pomodoro Timer</li>
-        <li>Habit Tracker</li>
-      </ul>
-    </div>
+      <!-- Feature 1: To Do lists -->
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
+          <h4>To Do Lists</h4>
+          <p>Organize your daily tasks efficiently with customizable to-do lists.</p>
+        </div>
+        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
 
+          <!-- Placeholder for image here until we get the right image -->
+          <img src="todo-image.jpg" alt="To Do Lists" class="img-fluid rounded" />
+        </div>
+      </div>
+    
+      <!-- Feature 2: Calendar Tracker of Gym -->
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
+          <h4>Calendar Tracker of Gym</h4>
+          <p>Track your gym schedule with a built-in calendar tailored for your fitness goals.</p>
+        </div>
+        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
+
+          <!-- Placeholder for image here until we get the right image -->
+          <img src="calendar-image.jpg" alt="Gym Calendar Tracker" class="img-fluid rounded" />
+        </div>
+      </div>
+    
+      <!-- Feature 3: Pomodoro Timer -->
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
+          <h4>Pomodoro Timer</h4>
+          <p>Boost focus and productivity with our built-in Pomodoro Timer.</p>
+        </div>
+        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
+
+          <!-- Placeholder for image here until we get the right image -->
+          <img src="pomodoro-image.jpg" alt="Pomodoro Timer" class="img-fluid rounded" />
+        </div>
+      </div>
+    
+      <!-- Feature 4: Habit Tracker -->
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
+          <h4>Habit Tracker</h4>
+          <p>Build consistent habits and track your progress over time.</p>
+        </div>
+        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
+          <img src="habit-image.jpg" alt="Habit Tracker" class="img-fluid rounded" />
+        </div>
+      </div>
+    </div>
+  
     <div id ="about" class="info-section">
       <h2>About</h2>
       <p> Meet the team, and inspiration behind this project</p>
@@ -59,30 +128,6 @@
       <p>&copy; 2025 Productivity Tracker. All rights reserved.</p>
   </div>
 
-    <!-- Implementing a simple function to show information once user clicks the button -->
-    <script>
-      //This runs after the page content is fully loaded
-      document.addEventListener("DOMContentLoaded", function () {
-
-        //Hide all info sections initially on the global webpage
-        document.querySelectorAll('.info-section').forEach(el => {
-          el.style.display = "none";
-        });
-    
-        window.showInfo = function (infoID) {
-          //Hide all info sections (when it's loaded hide all info again)
-          document.querySelectorAll('.info-section').forEach(el => {
-            el.style.display = "none";
-          });
-    
-          //Display the info when button is clicked
-          const target = document.getElementById(infoID);
-          if (target) {
-            target.style.display = "block";
-          }
-        };
-      });
-    </script>
 
   </body>
   </html> 

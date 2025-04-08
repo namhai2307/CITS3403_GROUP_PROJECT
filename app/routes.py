@@ -1,22 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for
-from flask_login import login_user, LoginManager
-from app.models import User
+from flask import Blueprint, render_template
 
-main_routes = Blueprint('main', __name__)
-login_manager = LoginManager()
+main = Blueprint('main', __name__)
 
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
-
-@main_routes.route('/')
-def home():
+@main.route('/')
+def index():  
     return render_template('index.html')
 
-@main_routes.route('/login', methods=['GET'])
+@main.route('/login')
 def login():
     return render_template('login.html')
 
-@main_routes.route('/register', methods=['GET'])
-def register():
-    return render_template('register.html')s
+@main.route('/signup')
+def signup():
+    return render_template('sign_up_page.html')

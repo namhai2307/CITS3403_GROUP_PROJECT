@@ -4,24 +4,27 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from .config import Config
 
+
+
 db = SQLAlchemy()
 login_manager = LoginManager()
 migrate = Migrate()
+
+
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     
-    # 扩展初始化
+    # Expand initialization
     db.init_app(app)
-    login_manager.init_app(app)
     migrate.init_app(app, db)
+    login_manager.init_app(app)
     
     
-    with app.app_context():
-        db.create_all()
     
-    from app.routes import main_routes
-    app.register_blueprint(main_routes)
+    from .models import User
+    from app.routes import main 
+    app.register_blueprint(main)
     
     return app

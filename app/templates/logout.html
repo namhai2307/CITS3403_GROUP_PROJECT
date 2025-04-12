@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+
+{% block head %}
+    <title>Who is Free? - Logout </title>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-success" role="alert">
+        You have successfully logged out.
+    </div>
+    <p>Redirecting to the homepage...</p>
+</div>
+
+<script>
+    //Simple script to redirect user back to index home page, with a display message
+    setTimeout(function() {
+        window.location.href = "{{ url_for('index') }}";
+    }, 3000);
+</script>
+{% endblock %}

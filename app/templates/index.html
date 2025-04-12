@@ -3,133 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prodo</title>
+  <title>{% block title %}Homepage - Who is Free?{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  <!-- Local CSS and JS files -->
-  <script src="/Users/dennis/Desktop/UWA Y3S1/CITS3403 Agile Web Development/Project/CITS3403_GROUP_PROJECT/app/static/homepagescript.js"></script>
-  <link rel = "stylesheet" href = "/Users/dennis/Desktop/UWA Y3S1/CITS3403 Agile Web Development/Project/CITS3403_GROUP_PROJECT/app/static/homepagestyle.css">
-
-  <!-- Remove this comment below and local <link href = "/users/dennis..." copy once all design has been implemented -->
-  <!-- Code below is for Flask backend infrastructure to load css styles and redirection page -->
-  <!-- <link rel="stylesheet" href="{{ url_for('static', filename='homepagestyle.css') }}"> --> 
-  <!-- <script src="{{ url_for('static', filename='homepagescript.js') }}"></script> -->
-  
+  <link rel="stylesheet" href="{{ url_for('static', filename='homepagestyle.css') }}">
+  <script src="{{ url_for('static', filename='homepagescript.js') }}"></script>
 </head>
 
 <body>
-  <div id = "body"> 
-  <!-- Header Text/title -->
-  <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
-    <header>
-      <h5 class ="m-0">🌿 Prodo</h5>
-    </header>
+  <div id="body"> 
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+      <header>
+      <h5 class="m-0"> 📅 Who is free? </h5>
+      </header>
 
-    <!-- Navigation Bar for buttons -->
-    <nav class="d-flex gap-1"> 
-      <button class="btn btn-outline-primary" onclick="showInfo('intro')">Introduction</button>
-      <button class="btn btn-outline-primary" onclick="showInfo('features')">Features</button>
-      <button class="btn btn-outline-primary" onclick="showInfo('about')">About</button>
-      <button class="btn btn-outline-primary" onclick="showInfo('contact')">Contact</button>
-      <a class="btn btn-outline-primary" href="{{ url_for('main.signup') }}">Login/Signup</a>
-    </nav>
-  </div>
+      <!-- Navigation Bar -->
+      <nav class="d-flex gap-1"> 
+        <a class="btn btn-outline-primary" href="{{ url_for('index') }}">Home</a>
+        {% if session.get('logged_in') %}
+          <a class="btn btn-outline-primary" href="{{ url_for('dashboard') }}">Dashboard</a>
 
-  <!-- Content Area for Intro, Feature, About, Contact, Footer -->
-  <div class="d-flex justify-content-between align-items-center p-3 gap-3"></div>
+          <!-- Add placeholder for another button for friends? to see their calendar or friends lists -->
 
-    <!-- Left Text Box for Intro text -->
-    <div id="intro" class="info-section">
+          <a class="btn btn-outline-primary" href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a class="btn btn-outline-primary" href="{{ url_for('login') }}">Login/Signup</a>
+        {% endif %}
+        <a class="btn btn-outline-primary" href="{{ url_for('profile') }}">Profile</a>
+      </nav>
+    </div>
+
+    <!-- Content Block -->
+    <div class="container">
+      {% block content %}
+      <div id="content-area" class="mt-4">
+      <div id="intro" class="content-section">
       <h2>Introduction</h2>
-
-      <!-- Side-by-side container -->
-      <div class="d-flex justify-content-between align-items-start gap-3">
-
-        <!-- Left Text Box -->
-        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
-          <p>Welcome to our productivity tracker!</p>
-        </div>
-
-        <!-- Right Image Box -->
-        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
-          <!-- Placeholder for image here until we get the right image -->
-          <img src="your-image.jpg" alt="Intro Image" class="img-fluid rounded" />
-        </div>
-
+      <p>Welcome to "Who is Free?" - your go-to platform for scheduling and availability management.</p>
+      <img src="{{ url_for('static', filename='images/intro_placeholder.png') }}" alt="Introduction Image" class="img-fluid">
       </div>
-    </div>
-
-    <div id="features" class="info-section">
+      <div id="features" class="content-section">
       <h2>Features</h2>
-      <!-- Feature 1: To Do lists -->
-      <div class="d-flex justify-content-between align-items-start gap-3">
-        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
-          <h4>To Do Lists</h4>
-          <p>Organize your daily tasks efficiently with customizable to-do lists.</p>
-        </div>
-        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
-
-          <!-- Placeholder for image here until we get the right image -->
-          <img src="todo-image.jpg" alt="To Do Lists" class="img-fluid rounded" />
-        </div>
+      <p>Discover our amazing features that make scheduling a breeze.</p>
+      <img src="{{ url_for('static', filename='images/features_placeholder.png') }}" alt="Features Image" class="img-fluid">
       </div>
-    
-      <!-- Feature 2: Calendar Tracker of Gym -->
-      <div class="d-flex justify-content-between align-items-start gap-3">
-        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
-          <h4>Calendar Tracker of Gym</h4>
-          <p>Track your gym schedule with a built-in calendar tailored for your fitness goals.</p>
-        </div>
-        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
-
-          <!-- Placeholder for image here until we get the right image -->
-          <img src="calendar-image.jpg" alt="Gym Calendar Tracker" class="img-fluid rounded" />
-        </div>
-      </div>
-    
-      <!-- Feature 3: Pomodoro Timer -->
-      <div class="d-flex justify-content-between align-items-start gap-3">
-        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
-          <h4>Pomodoro Timer</h4>
-          <p>Boost focus and productivity with our built-in Pomodoro Timer.</p>
-        </div>
-        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
-
-          <!-- Placeholder for image here until we get the right image -->
-          <img src="pomodoro-image.jpg" alt="Pomodoro Timer" class="img-fluid rounded" />
-        </div>
-      </div>
-    
-      <!-- Feature 4: Habit Tracker -->
-      <div class="d-flex justify-content-between align-items-start gap-3">
-        <div class="flex-fill border p-3 rounded" style="max-width: 60%;">
-          <h4>Habit Tracker</h4>
-          <p>Build consistent habits and track your progress over time.</p>
-        </div>
-        <div class="flex-fill border p-3 rounded text-center" style="max-width: 40%;">
-          <img src="habit-image.jpg" alt="Habit Tracker" class="img-fluid rounded" />
-        </div>
-      </div>
-    </div>
-  
-    <div id ="about" class="info-section">
+      <div id="about" class="content-section">
       <h2>About</h2>
-      <p> Meet the team, and inspiration behind this project</p>
-    </div>
-
-    <div id="contact" class="info-section">
+      <p>Learn more about our mission and the team behind "Who is Free?".</p>
+      <img src="{{ url_for('static', filename='images/about_placeholder.png') }}" alt="About Image" class="img-fluid">
+      </div>
+      <div id="contact" class="content-section">
       <h2>Contact</h2>
-      <p> For any questions or feedback, please reach out to us!</p>
+      <p>Get in touch with us for any inquiries or support.</p>
+      <img src="{{ url_for('static', filename='images/contact_placeholder.png') }}" alt="Contact Image" class="img-fluid">
+      </div>
+      </div>
+      {% endblock %}
     </div>
 
-    <div id="footer" class="info-section">
-      <p>&copy; 2025 Productivity Tracker. All rights reserved.</p>
   </div>
-
-
-  </body>
-  </html> 
-
-  
+</body>
+</html>

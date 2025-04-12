@@ -5,6 +5,7 @@ h5 {
   color: black; /* Green color */
   text-align: center;
   margin-top: 20px;
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
 }
 
 body {
@@ -31,7 +32,7 @@ nav {
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
 .btn-outline-primary.active {
-  background-color: #AFE1AF !important;
+  background-color: lightcoral !important;
   color: black !important;
   border-color: black !important;
 }

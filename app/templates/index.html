@@ -3,88 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prodo</title>
+  <title>{% block title %}Homepage - Who is Free?{% endblock %}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='homepagestyle.css') }}">
+  <script src="{{ url_for('static', filename='homepagescript.js') }}"></script>
 </head>
 
 <body>
-  <!-- Header Text/title -->
-  <div class="d-flex justify-content-between align-items-center p-3">
-    <header>
-      <h5 class ="m-0">🌿 Prodo</h5>
-    </header>
+  <div id="body"> 
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+      <header>
+      <h5 class="m-0"> 📅 Who is free? </h5>
+      </header>
 
-    <!-- Navigation Bar for buttons -->
-    <nav class="d-flex gap-1"> 
-      <button class="btn btn-outline-primary" onclick="showInfo('intro')">Introduction</button>
-      <button class="btn btn-outline-primary" onclick="showInfo('features')">Features</button>
-      <button class="btn btn-outline-primary" onclick="showInfo('about')">About</button>
-      <button class="btn btn-outline-primary" onclick="showInfo('contact')">Contact</button>
-      <a class="btn btn-outline-primary" href="{{ url_for('main.signup') }}">Login/Signup</a>
-    </nav>
-  </div>
+      <!-- Navigation Bar -->
+      <nav class="d-flex gap-1"> 
+        <a class="btn btn-outline-primary" href="{{ url_for('index') }}">Home</a>
+        {% if session.get('logged_in') %}
+          <a class="btn btn-outline-primary" href="{{ url_for('dashboard') }}">Dashboard</a>
 
-  <!-- Content Area for Intro, Feature, About, Contact, Footer -->
-  <div class="d-flex justify-content-between align-items-center p-3"></div>
-    <div id ="intro" class = "info-section">
+          <!-- Add placeholder for another button for friends? to see their calendar or friends lists -->
+
+          <a class="btn btn-outline-primary" href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+          <a class="btn btn-outline-primary" href="{{ url_for('login') }}">Login/Signup</a>
+        {% endif %}
+        <a class="btn btn-outline-primary" href="{{ url_for('profile') }}">Profile</a>
+      </nav>
+    </div>
+
+    <!-- Content Block -->
+    <div class="container">
+      {% block content %}
+      <div id="content-area" class="mt-4">
+      <div id="intro" class="content-section">
       <h2>Introduction</h2>
-      <p> Welcome to our productivity tracker!</p>
-    </div>
-
-    <div id ="features" class ="info-section">
+      <p>Welcome to "Who is Free?" - your go-to platform for scheduling and availability management.</p>
+      <img src="{{ url_for('static', filename='images/intro_placeholder.png') }}" alt="Introduction Image" class="img-fluid">
+      </div>
+      <div id="features" class="content-section">
       <h2>Features</h2>
-      <p> These are some example features</p>
-      <ul>
-        <li>To Do lists</li>
-        <li>Calendar Tracker of Gym</li>
-        <li>Pomodoro Timer</li>
-        <li>Habit Tracker</li>
-      </ul>
-    </div>
-
-    <div id ="about" class="info-section">
+      <p>Discover our amazing features that make scheduling a breeze.</p>
+      <img src="{{ url_for('static', filename='images/features_placeholder.png') }}" alt="Features Image" class="img-fluid">
+      </div>
+      <div id="about" class="content-section">
       <h2>About</h2>
-      <p> Meet the team, and inspiration behind this project</p>
-    </div>
-
-    <div id="contact" class="info-section">
+      <p>Learn more about our mission and the team behind "Who is Free?".</p>
+      <img src="{{ url_for('static', filename='images/about_placeholder.png') }}" alt="About Image" class="img-fluid">
+      </div>
+      <div id="contact" class="content-section">
       <h2>Contact</h2>
-      <p> For any questions or feedback, please reach out to us!</p>
+      <p>Get in touch with us for any inquiries or support.</p>
+      <img src="{{ url_for('static', filename='images/contact_placeholder.png') }}" alt="Contact Image" class="img-fluid">
+      </div>
+      </div>
+      {% endblock %}
     </div>
 
-    <div id="footer" class="info-section">
-      <p>&copy; 2025 Productivity Tracker. All rights reserved.</p>
   </div>
-
-    <!-- Implementing a simple function to show information once user clicks the button -->
-    <script>
-      //This runs after the page content is fully loaded
-      document.addEventListener("DOMContentLoaded", function () {
-
-        //Hide all info sections initially on the global webpage
-        document.querySelectorAll('.info-section').forEach(el => {
-          el.style.display = "none";
-        });
-    
-        window.showInfo = function (infoID) {
-          //Hide all info sections (when it's loaded hide all info again)
-          document.querySelectorAll('.info-section').forEach(el => {
-            el.style.display = "none";
-          });
-    
-          //Display the info when button is clicked
-          const target = document.getElementById(infoID);
-          if (target) {
-            target.style.display = "block";
-          }
-        };
-      });
-    </script>
-
-  </body>
-  </html> 
-
-  
+</body>
+</html>

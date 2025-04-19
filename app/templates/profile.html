@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+
+{% block head %}
+    <title>Who is Free? - Profile </title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div id="content-area" class="mt-4">
+        <div id="profile" class="content-section">
+            <h2>Profile</h2>
+            <p>Welcome to your Profile. Here is where you customise your profile, add friends and more!</p>
+            <img src="{{ url_for('static', filename='images/dashboard_placeholder.png') }}" alt="Dashboard Image" class="img-fluid">
+        </div>
+    </div>
+</div>
+{% endblock %}

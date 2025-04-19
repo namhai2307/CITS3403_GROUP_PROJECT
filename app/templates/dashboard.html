@@ -5,68 +5,13 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <div class="row">
-            <!-- Left Section: Add Data to Calendar -->
-            <div class="col-md-4 offset-md-0">
-                <h3><i class="bi bi-calendar-event"></i> Dashboard Calendar</h3>
-                <form>
-                    <div class="mb-3">
-                        <label for="date" class="form-label">Select Date</label>
-                        <input type="text" class="form-control" id="date" placeholder="dd/mm/yyyy">
-                    </div>
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Title</label>
-                        <input type="text" class="form-control" id="title" placeholder="Enter title">
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" rows="3" placeholder="Enter description"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="file" class="form-label">Attach File (optional)</label>
-                        <input type="file" class="form-control" id="file">
-                    </div>
-                    <div class="mb-3">
-                        <label for="sharing" class="form-label">Sharing</label>
-                        <select class="form-select" id="sharing">
-                            <option value="private" selected>Private</option>
-                            <option value="public">Public</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Add to Calendar</button>
-                </form>
-            </div>
-
-            <!-- Empty Middle Section -->
-            <div class="col-md-4"></div>
-
-            <!-- Right Section: Calendar -->
-            <div class="col-md-4">
-                <div class="calendar-header">
-                    <h3 class="calendar-title">Your Calendar</h3>
-                </div>
-                <div class="calendar-container">
-                    <!-- Calendar content goes here -->
-                    <div class="header">
-                        <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
-                        <div id="month-year"></div>
-                        <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
-                    </div>
-                    <div class="weekdays">
-                        <div>Sun</div>
-                        <div>Mon</div>
-                        <div>Tue</div>
-                        <div>Wed</div>
-                        <div>Thu</div>
-                        <div>Fri</div>
-                        <div>Sat</div>
-                    </div>
-                    <div class="days" id="days"></div>
-                </div>
-            </div>
+<div class="container">
+    <div id="content-area" class="mt-4">
+        <div id="dashboard" class="content-section">
+            <h2>Dashboard</h2>
+            <p>Welcome to your dashboard. Here you can manage your schedules and view your availability.</p>
+            <img src="{{ url_for('static', filename='images/dashboard_placeholder.png') }}" alt="Dashboard Image" class="img-fluid">
         </div>
     </div>
-
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</div>
 {% endblock %}

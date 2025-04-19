@@ -19,14 +19,14 @@ def login():
         input_email = form.email.data
         input_password = form.password.data
 
-        #Check if the email and password match a user in the "database"
+        # Check if the email and password match a user in the "database"
         if any(user['email'] == input_email and user['password'] == input_password for user in users):
             session['logged_in'] = True
             session['email'] = input_email
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))  #If user successful, then redirect to dashboard
+            return redirect(url_for('dashboard'))  # Redirect to dashboard upon successful login
         else:
-            flash('Invalid email or password', 'error')  #Otherwise, show an error
+            flash('Invalid email or password', 'error')  # Show error message if login fails
 
     return render_template('login.html', form=form)
 
@@ -37,12 +37,12 @@ def signup():
         input_email = form.email.data
         input_password = form.password.data
 
-        #If user account already created, then show error message
+        # Check if the email is already registered
         if any(user['email'] == input_email for user in users):
             flash('Email is already registered. Please log in.', 'error')
             return redirect(url_for('login'))
 
-        #Add new user data to register if successful
+        # Add the new user to the "database"
         users.append({'email': input_email, 'password': input_password})
         flash('Account created successfully! Please log in.', 'success')
         return redirect(url_for('login'))

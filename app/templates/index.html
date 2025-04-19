@@ -17,7 +17,6 @@
   <!-- CSS style for Dashboard  -->
   <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
  
-  
 </head>
 
 <body>
@@ -45,7 +44,7 @@
     </div>
 
     <!-- Content Block -->
-    <div class="container">
+    <div class="container-fluid flex-grow-1">
       {% block content %}
       <div id="content-area" class="mt-4">
       <div id="intro" class="content-section">

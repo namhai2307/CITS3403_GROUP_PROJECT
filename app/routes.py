@@ -2,15 +2,15 @@ from flask import redirect, render_template, url_for, session, flash, request
 from app import app
 from app.forms import LoginForm, SignUpForm
 
+#Sample test login for testing purposes
+users = [
+    {'email': 'admin@gmail.com', 'password': 'adminadminadmin'},
+]
+
 @app.route('/')
 @app.route('/index', methods=['GET', 'POST'])
 def index():  
     return render_template('index.html')
-
-#Sample username list to simulate the "database" for login
-users = [
-    {'username': 'admin@gmail.com', 'password': 'adminadminadmin'},
-]
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -19,14 +19,14 @@ def login():
         input_email = form.email.data
         input_password = form.password.data
 
-        #Check if user supplied correct username and password
-        if any(user['username'] == input_email and user['password'] == input_password for user in users):
+        # Check if the email and password match a user in the "database"
+        if any(user['email'] == input_email and user['password'] == input_password for user in users):
             session['logged_in'] = True
-            session['username'] = input_email
+            session['email'] = input_email
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))  #If user login successful, then redirect to dashboard
+            return redirect(url_for('dashboard'))  # Redirect to dashboard upon successful login
         else:
-            flash('Invalid email or password', 'error')  #Otherwise, show an error message
+            flash('Invalid email or password', 'error')  # Show error message if login fails
 
     return render_template('login.html', form=form)
 
@@ -34,14 +34,24 @@ def login():
 def signup():
     form = SignUpForm()
     if form.validate_on_submit():
-        #if account created properly, then success
+        input_email = form.email.data
+        input_password = form.password.data
+
+        # Check if the email is already registered
+        if any(user['email'] == input_email for user in users):
+            flash('Email is already registered. Please log in.', 'error')
+            return redirect(url_for('login'))
+
+        # Add the new user to the "database"
+        users.append({'email': input_email, 'password': input_password})
         flash('Account created successfully! Please log in.', 'success')
         return redirect(url_for('login'))
+
     return render_template('sign_up.html', form=form)
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    #Make sure if user is logged before entering the dashboard
+    #Make sure user is logged in before accessing the dashboard
     if not session.get('logged_in'):
         flash('Please log in to access the dashboard', 'error')
         return redirect(url_for('login'))

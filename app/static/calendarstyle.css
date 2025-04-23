@@ -4,68 +4,7 @@
     box-sizing: border-box;
 }
 
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient();
-    color: #333;
-    background: linear-gradient(to right, white, rgb(120, 120, 240));
-    height: 100vh; /* Set height to 100% of the viewport */
-    margin: 0; /* Ensure no default margin interferes */
-}
-
-.container {
-    margin: 0; /* Remove horizontal margin */
-    display: flex; /* Ensure the container uses flexbox */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    width: 100%; /* Ensure the container spans the full width */
-    height: 100%; /* Ensure the container spans the full height */
-}
-
-.form-box {
-    width: 100%;
-    max-width: 450px;
-    padding: 30px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px black;
-    display: none;
-}
-
-.form-box.active {
-    display: block;
-}
-
-h2 {
-    font-size: 34px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-input {
-    width: 100%;
-    padding: 12px;
-    background-color: aliceblue;
-    border-radius: 6px;
-    margin-bottom: 12px;
-    border: none;
-}
-
-button {
-    border-radius: 6px;
-    background: aliceblue;
-    padding: 12px;
-    width: 100%;
-    transition: 0.5s;
-}
-
-button:hover {
-    background: rgb(119, 119, 226);
-    border: none;
-}
-
+/*
 p {
     font-size: 14.5px;
     text-align: center;
@@ -75,11 +14,11 @@ p {
 p a {
     color: rgb(6, 115, 240);
 }
-
+*/
 .calendar-container{
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0 0 20px #222222;
+    box-shadow: 0 0 2px #222222;
     overflow: hidden;
     width: 600px;
     color: black;

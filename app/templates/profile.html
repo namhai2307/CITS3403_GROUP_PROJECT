@@ -5,13 +5,54 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
     <div id="content-area" class="mt-4">
         <div id="profile" class="content-section">
             <h2>Profile</h2>
             <p>Welcome to your Profile. Here is where you customise your profile, add friends and more!</p>
             <img src="{{ url_for('static', filename='images/dashboard_placeholder.png') }}" alt="Dashboard Image" class="img-fluid">
+            <div class="container-box">
+                <div class="form-box" id="find-friend">
+                    <h3>Find your friends</h3>
+                    <form action="/submit" method="POST">
+                        <input type="text" placeholder="Enter your friend user name" required>
+                        <button type="submit" class="btn btn-primary">Find them</button>
+                    </form>
+                </div>
+            </div>
+            <div class="profile-container">
+                <div class="container-box">
+                    <div class="box">
+                        <div class="username">
+                            <div>
+                                <h3>Ben Dover</h3>
+                            </div>
+                        </div>
+                        <h3 class="job-title">Professional Unemployer</h3>
+                        <img src="#" alt="Profile Picture">
+                        <div class="btn btn-primary">Add Friend</div>
+                    </div>
+                    <div class="box">
+                        <div class="username">
+                            <div>
+                                <h3>John Doe</h3>
+                            </div>
+                        </div>
+                        <h3 class="job-title">Software Engineer</h3>
+                        <img src="#" alt="Profile Picture">
+                        <div class="btn btn-primary">Add Friend</div>
+                    </div>
+                    <div class="box">
+                        <div class="username">
+                            <div>
+                                <h3>Jane Smith</h3>
+                            </div>
+                        </div>
+                        <h3 class="job-title">Graphic Designer</h3>
+                        <img src="#" alt="Profile Picture">
+                        <div class="btn btn-primary">Add Friend</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

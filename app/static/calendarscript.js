@@ -6,6 +6,8 @@ function showForm(formID) {
 document.addEventListener('DOMContentLoaded', function(){
     const monthYear = document.getElementById("month-year");
     const daysContainer = document.getElementById("days");
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
     console.log(monthYear); //for debug
     const months = [
         "January", 
@@ -52,7 +54,26 @@ document.addEventListener('DOMContentLoaded', function(){
             }
             daysContainer.appendChild(dayDiv);
         }
+        // next Month:
+        const nextMonthStartDay = 7 - new Date(year, month + 1, 0).getDay() - 1;
+        for (let i = 1; i <= nextMonthStartDay; i++) {
+            const dayDiv = document.createElement('div');
+            dayDiv.textContent = i;
+            dayDiv.classList.add('fade');
+            daysContainer.appendChild(dayDiv);
         }
+
+    }
+
+    prevButton.addEventListener('click', function () {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar(currentDate);
+    });
+
+    nextButton.addEventListener('click', function () {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar(currentDate);
+    });
 
     renderCalendar(currentDate);
     });

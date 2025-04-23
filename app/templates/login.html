@@ -8,7 +8,7 @@
 <div class="container">
     <div id="content-area" class="mt-4">
         <div class="form-box" id="login-form">
-            <form method="POST" action="{{ url_for('login') }}">
+            <form method="POST" action="{{ url_for('main.login') }}">
                 {{ form.hidden_tag() }}
                 <h2>Login</h2>
                 <div class="mb-3">
@@ -26,7 +26,7 @@
                     {% endfor %}
                 </div>
                 <button type="submit" class="btn btn-primary">{{ form.submit.label }}</button>
-                <p>Don't have an account? <a href="{{ url_for('signup') }}">Register</a></p>
+                <p>Don't have an account? <a href="{{ url_for('main.signup') }}">Register</a></p>
             </form>
         </div>
     </div>

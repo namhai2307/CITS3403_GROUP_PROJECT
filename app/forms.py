@@ -28,6 +28,10 @@ class SignUpForm(FlaskForm):
             Length(min=3, max=20),
         ]
     )
+    email = StringField('Email', validators=[  # Add email field
+        DataRequired(),
+        Email()
+    ])
     password = PasswordField(
         'Password',
         validators=[

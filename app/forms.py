@@ -21,11 +21,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class SignUpForm(FlaskForm):
-    username = StringField(
-        'Username',
+    email = StringField(
+        'Email',
         validators=[
             DataRequired(),
-            Length(min=3, max=20),
+            Email(),
+            Length(max=254),  
         ]
     )
     password = PasswordField(

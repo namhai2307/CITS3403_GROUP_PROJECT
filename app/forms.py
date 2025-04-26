@@ -21,14 +21,17 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class SignUpForm(FlaskForm):
-    email = StringField(
-        'Email',
+    username = StringField(
+        'Username',
         validators=[
             DataRequired(),
-            Email(),
-            Length(max=254),  
+            Length(min=3, max=20),
         ]
     )
+    email = StringField('Email', validators=[  # Add email field
+        DataRequired(),
+        Email()
+    ])
     password = PasswordField(
         'Password',
         validators=[

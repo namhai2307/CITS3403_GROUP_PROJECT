@@ -1,68 +1,89 @@
-from flask import redirect, render_template, url_for, session, flash, request
-from app import app
-from app.forms import LoginForm, SignUpForm
+from flask import Blueprint, redirect, render_template, url_for, session, flash, request
+from flask_login import login_user, logout_user, current_user, login_required
+from . import  db
+from .forms import LoginForm, SignUpForm
+from .models import User  # Import User Model
+from werkzeug.security import check_password_hash, generate_password_hash
 
-#Sample test login for testing purposes
-users = [
-    {'email': 'admin@gmail.com', 'password': 'adminadminadmin'},
-]
+#Initialization blueprint (named main to keep it concise)
+main = Blueprint('main', __name__)
 
-@app.route('/')
-@app.route('/index', methods=['GET', 'POST'])
+@main.route('/')
+@main.route('/index', methods=['GET', 'POST'])
 def index():  
     return render_template('index.html')
 
-@app.route('/login', methods=['GET', 'POST'])
+
+
+@main.route('/login', methods=['GET', 'POST'])
 def login():
+
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+    
     form = LoginForm()
     if form.validate_on_submit():
-        input_email = form.email.data
-        input_password = form.password.data
+        user = User.query.filter_by(email=form.email.data).first()
 
-        # Check if the email and password match a user in the "database"
-        if any(user['email'] == input_email and user['password'] == input_password for user in users):
-            session['logged_in'] = True
-            session['email'] = input_email
+        #Using database validation instead of hard coding
+        if user and check_password_hash(user.password_hash, form.password.data):
+            login_user(user, remember=True)  #Flask Login will automatically handle sessions
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard'))  # Redirect to dashboard upon successful login
+            return redirect(url_for('main.dashboard'))
         else:
-            flash('Invalid email or password', 'error')  # Show error message if login fails
+            flash('Invalid email  or password', 'error')
 
     return render_template('login.html', form=form)
 
-@app.route('/signup', methods=['GET', 'POST'])
+@main.route('/signup', methods=['GET', 'POST'])
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.dashboard'))
+        
     form = SignUpForm()
     if form.validate_on_submit():
-        input_email = form.email.data
-        input_password = form.password.data
-
-        # Check if the email is already registered
-        if any(user['email'] == input_email for user in users):
-            flash('Email is already registered. Please log in.', 'error')
-            return redirect(url_for('login'))
-
-        # Add the new user to the "database"
-        users.append({'email': input_email, 'password': input_password})
-        flash('Account created successfully! Please log in.', 'success')
-        return redirect(url_for('login'))
-
+        #Check if the username and email already exist
+        existing_user = User.query.filter(
+            (User.username == form.username.data) | 
+            (User.email == form.email.data)
+        ).first()
+        
+        if existing_user:
+            flash('Username or email already exists', 'error')
+            return redirect(url_for('main.signup'))
+            
+        # Verify password match
+        if form.password.data != form.confirm_password.data:
+            flash('Passwords do not match', 'error')
+            return redirect(url_for('main.signup'))
+            
+        # Create User
+        user = User(
+            username=form.username.data,
+            email=form.email.data,  # Add email field
+            password_hash=generate_password_hash(form.password.data)
+        )
+        db.session.add(user)
+        db.session.commit()
+        
+        flash('Account created! Please login.', 'success')
+        return redirect(url_for('main.login'))
+        
     return render_template('sign_up.html', form=form)
 
-@app.route('/dashboard', methods=['GET'])
+@main.route('/dashboard')
+@login_required  #Replace manual inspection with a decorator
 def dashboard():
-    #Make sure user is logged in before accessing the dashboard
-    if not session.get('logged_in'):
-        flash('Please log in to access the dashboard', 'error')
-        return redirect(url_for('login'))
     return render_template('dashboard.html')
 
-@app.route('/profile', methods=['GET', 'POST'])
+@main.route('/profile')
+@login_required
 def profile():
     return render_template('profile.html')
 
-@app.route('/logout', methods=['GET'])
+@main.route('/logout')
+@login_required
 def logout():
-    session.clear()  
+    logout_user() #Flask Login will clean up sessions
     flash('You have been logged out.', 'info')
-    return redirect(url_for('index'))
+    return redirect(url_for('main.index'))

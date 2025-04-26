@@ -10,9 +10,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='homepagestyle.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='calendarstyle.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='profilestyle.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='homepage.css') }}">
+
   <!-- css icon for the dashboard -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script src="{{ url_for('static', filename='homepagescript.js') }}"></script>
+  <script src="{{ url_for('static', filename='dashboardscript.js') }}"></script>
 </head>
 
 <body>
@@ -25,17 +27,17 @@
 
       <!-- Navigation Bar -->
       <nav class="d-flex gap-1"> 
-        <a class="btn btn-outline-primary" href="{{ url_for('index') }}">Home</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('main.index') }}">Home</a>
         {% if session.get('logged_in') %}
-          <a class="btn btn-outline-primary" href="{{ url_for('dashboard') }}">Dashboard</a>
+          <a class="btn btn-outline-primary" href="{{ url_for('main.dashboard') }}">Dashboard</a>
 
           <!-- Add placeholder for another button for friends? to see their calendar or friends lists -->
 
-          <a class="btn btn-outline-primary" href="{{ url_for('logout') }}">Logout</a>
+          <a class="btn btn-outline-primary" href="{{ url_for('main.logout') }}">Logout</a>
         {% else %}
-          <a class="btn btn-outline-primary" href="{{ url_for('login') }}">Login/Signup</a>
+          <a class="btn btn-outline-primary" href="{{ url_for('main.login') }}">Login/Signup</a>
         {% endif %}
-        <a class="btn btn-outline-primary" href="{{ url_for('profile') }}">Profile</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('main.profile') }}">Profile</a>
       </nav>
     </div>
 

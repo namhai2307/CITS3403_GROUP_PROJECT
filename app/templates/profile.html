@@ -2,6 +2,7 @@
 
 {% block head %}
     <title>Who is Free? - Profile </title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='profilestyle.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -12,8 +13,8 @@
             <img src="{{ url_for('static', filename='images/dashboard_placeholder.png') }}" alt="Dashboard Image" class="img-fluid">
             <div class="container-box">
                 <div class="form-box" id="find-friend">
-                    <h3>Find your friends</h3>
                     <form action="/submit" method="POST">
+                        <h2 style="text-align: center; margin-bottom: 20px">Find your friends</h2>
                         <input type="text" placeholder="Enter your friend user name" required>
                         <button type="submit" class="btn btn-primary">Find them</button>
                     </form>

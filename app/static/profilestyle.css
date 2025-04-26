@@ -1,5 +1,6 @@
+
 .container-box {
-    margin: 0; /* Remove horizontal margin */
+    margin: 0 15px;
     display: flex; /* Ensure the container uses flexbox */
     justify-content: center; /* Center content horizontally */
     align-items: center; /* Center content vertically */
@@ -9,11 +10,22 @@
 
 .form-box {
     width: 100%;
-    max-width: 350px;
+    max-width: 320px;
     padding: 30px;
     background: white;
     border-radius: 5px;
     align-self: center;
+}
+
+.input {
+    width: 100%;
+    padding: 12px;
+    background: #eee;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    color: #333;
+    margin-bottom: 20px;
 }
 
 .profile-container .container-box .box {

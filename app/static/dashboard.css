@@ -1,0 +1,185 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa;
+    color: black;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-box {
+    width: 100%;
+    max-width: 450px;
+    padding: 30px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px black;
+    display: none;
+}
+
+.form-box.active {
+    display: block;
+}
+
+h2 {
+    font-size: 34px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: black;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: black;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    background-color: aliceblue;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    border: none;
+}
+
+button {
+    border-radius: 5px;
+    background: white;
+    padding: 10px 15px;
+    width: 100%;
+    border: 1px solid black;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: lightcoral;
+    color: white;
+    border-color: black;
+}
+
+p {
+    font-size: 14.5px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+p a {
+    color: rgb(6, 115, 240);
+}
+
+.calendar-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 600px;
+    color: black;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#month-year {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: black;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.calendar-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    color: black;
+}
+
+.weekdays, .days {
+    display: flex;
+    flex-wrap: wrap;
+}
+.days {
+    height: 240px;
+}
+.weekdays div, .days div {
+    width: 14.28%;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 5px;
+    color: black;
+}
+.days div {
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.days div:hover {
+    background-color: lightcoral;
+    color: white;
+}
+.days .today {
+    background-color: lightcoral;
+    color: black;
+}
+
+.days .today:hover {
+    background-color: white;
+    color: black;
+}
+
+.fade {
+    color: black;
+    background-color: white;
+}
+.fade:hover {
+    color: white;
+    background-color: lightcoral;
+}
+
+/* Style for the arrow buttons */
+#prev, #next {
+    padding: 5px 10px; /* Reduce padding for smaller buttons */
+    font-size: 14px; /* Adjust font size for smaller icons */
+    border-radius: 5px; /* Keep rounded corners */
+    width: auto; /* Ensure the button width is minimal */
+    height: auto; /* Ensure the button height is minimal */
+}
+
+#prev i, #next i {
+    font-size: 16px; /* Adjust icon size */
+}
+
+#prev:hover, #next:hover {
+    background-color: lightcoral; /* Add hover effect */
+    color: white;
+}

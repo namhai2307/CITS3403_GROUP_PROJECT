@@ -70,17 +70,14 @@ document.addEventListener('DOMContentLoaded', function(){
                              i === selectedDate.getDate() && 
                              month === selectedDate.getMonth();
             
-            // const isToday = !isSelected && 
-            //              i === today.getDate() && 
-            //              month === today.getMonth() && 
-            //              year === today.getFullYear();
+            
 
             if (isSelected) dayDiv.classList.add('selected-day');
-            //if (isToday) dayDiv.classList.add('today');
+           
 
             // Add click event
             dayDiv.addEventListener('click', function() {
-                // 更新当前月份视图（如果是跨月点击）
+                
                 if (month !== currentDate.getMonth()) {
                     currentDate = new Date(year, month, 1);
                 }
@@ -111,12 +108,12 @@ document.addEventListener('DOMContentLoaded', function(){
         renderCalendar(currentDate);
     });
 
-    // 处理浏览器前进/后退
+    
     window.addEventListener('popstate', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const newUrlDate = urlParams.get('date');
         
-        // 只有当日期确实变化时才重新渲染
+        
         if ((newUrlDate && !selectedDate) || 
             (!newUrlDate && selectedDate) || 
             (newUrlDate && selectedDate && newUrlDate !== selectedDate.toISOString().split('T')[0])) {
@@ -126,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-    // 初始渲染
+    
     renderCalendar(currentDate);
 
     });

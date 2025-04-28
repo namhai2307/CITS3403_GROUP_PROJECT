@@ -12,9 +12,7 @@ main = Blueprint('main', __name__)
 @main.route('/index', methods=['GET', 'POST'])
 def index():  
     return render_template('index.html')
-
-
-
+################
 @main.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -34,7 +32,7 @@ def login():
             flash('Invalid email  or password', 'error')
 
     return render_template('login.html', form=form)
-
+################
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
@@ -70,12 +68,12 @@ def signup():
         return redirect(url_for('main.login'))
         
     return render_template('sign_up.html', form=form)
-
+################
 @main.route('/dashboard')
 @login_required  #Replace manual inspection with a decorator
 def dashboard():
     return render_template('dashboard.html')
-
+################
 @main.route('/profile', methods=['GET', 'POST'])
 def profile():
     if request.method == 'POST':
@@ -87,7 +85,15 @@ def profile():
     else:
         # Render the page without search results
         return render_template('profile.html', users=None)
-
+    
+@main.route('/search_users', methods=['POST'])
+def search_users():
+    search_query = request.json.get('search_query', '').strip()
+    if search_query:
+        users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
+        return jsonify([{'username': user.username, 'email': user.email} for user in users])
+    return jsonify([])
+################
 @main.route('/logout')
 @login_required
 def logout():

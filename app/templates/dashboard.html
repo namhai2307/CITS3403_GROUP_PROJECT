@@ -8,71 +8,243 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Add Bootstrap icon library -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- New: Basic validation styles -->
+    <style>
+        .validation-error {
+            color: #dc3545;
+            font-size: 0.875em;
+            height: 20px;
+            display: block;
+        }
+        .event-card {
+            border-left: 4px solid #0d6efd;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        .file-hint {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        .calendar-header {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .selected-day {
+            background-color: #0d6efd !important;
+            color: white !important;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .today {
+            background-color: #e9ecef;
+            border-radius: 50%;
+        }
+
+        .day-number {
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
 <div class="container mt-5">
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="row">
+            <div class="col-md-12">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show mb-3">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% endwith %}
+
     <div class="row">
-        <!-- Left Section: Add Data to Calendar -->
-        <div class="col-md-4 offset-md-0">
-            <h3><i class="bi bi-calendar-event"></i> Dashboard Calendar</h3>
-            <form>
-                <div class="mb-3">
-                    <label for="date" class="form-label">Select Date</label>
-                    <input type="text" class="form-control" id="date" placeholder="dd/mm/yyyy">
+        <!-- Left Section: Event Creation Form (modified but keeping original classes) -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-plus-circle me-2">Create New Event</i>
+                    </h5>
                 </div>
-                <div class="mb-3">
-                    <label for="title" class="form-label">Title</label>
-                    <input type="text" class="form-control" id="title" placeholder="Enter title">
+                
+                    <!-- New Event Form (added) -->
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {{ form.hidden_tag() }}
+                        
+                        <!-- Time Selection -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                {{ form.start_time.label(class="form-label") }}
+                                {{ form.start_time(class="form-control") }}
+                                {% for error in form.start_time.errors %}
+                                    <div class="validation-error">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.end_time.label(class="form-label") }}
+                                {{ form.end_time(class="form-control") }}
+                                {% for error in form.end_time.errors %}
+                                    <div class="validation-error">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Event Details -->
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control") }}
+                            {% for error in form.title.errors %}
+                                <div class="validation-error">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            {{ form.description.label(class="form-label") }}
+                            {{ form.description(class="form-control", rows=3) }}
+                        </div>
+
+                    
+
+                        <!-- privacy_level Settings -->
+                        <div class="mb-4">
+                            {{ form.privacy_level.label(class="form-label") }}
+                            {{ form.privacy_level(class="form-select") }}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-calendar-plus me-2"></i>Add to Calendar
+                        </button>
+                    </form>
                 </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <textarea class="form-control" id="description" rows="3" placeholder="Enter description"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label for="file" class="form-label">Attach File (optional)</label>
-                    <input type="file" class="form-control" id="file">
-                </div>
-                <div class="mb-3">
-                    <label for="sharing" class="form-label">Sharing</label>
-                    <select class="form-select" id="sharing">
-                        <option value="private" selected>Private</option>
-                        <option value="public">Public</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Add to Calendar</button>
-            </form>
+            </div>
         </div>
 
-        <!-- Empty Middle Section -->
-        <div class="col-md-4"></div>
+        <!-- Right Column: Calendar & Events -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="bi bi-calendar3 me-2"></i>My Calendar
+                        </h5>
+                        <div>
+                            <span id="month-year" class="fw-bold"></span>
+                            <button id="prev" class="btn btn-sm btn-outline-secondary ms-2">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button id="next" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Calendar Grid -->
+                    <div class="calendar-grid mb-4">
+                        <div class="weekdays row g-0 text-center fw-bold">
+                            <div class="col p-2">Sun</div>
+                            <div class="col p-2">Mon</div>
+                            <div class="col p-2">Tue</div>
+                            <div class="col p-2">Wed</div>
+                            <div class="col p-2">Thu</div>
+                            <div class="col p-2">Fri</div>
+                            <div class="col p-2">Sat</div>
+                        </div>
+                        <div class="days row g-0" id="days"></div>
+                    </div>
 
-        <!-- Right Section: Calendar -->
-        <div class="col-md-4">
-            <div class="calendar-header">
-                <h3 class="calendar-title">Your Calendar</h3>
-            </div>
-            <div class="calendar-container">
-                <!-- Calendar content goes here -->
-                <div class="header">
-                    <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
-                    <div id="month-year"></div>
-                    <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
+                    <!-- Today's Events -->
+                    <div class="mt-4">
+                        <h5 class="d-flex align-items-center">
+                            <i class="bi bi-list-task me-2"></i>{{ display_date.strftime('%A, %B %d') }} Schedule
+                        </h5>
+                        <div id="today-events">
+                            {% if events %}
+                                {% for event in events %}
+                                    <div class="event-card">
+                                        <div class="d-flex justify-content-between">
+                                            <strong>{{ event.title }}</strong>
+                                            <small class="text-muted">
+                                                {{ event.start_time.strftime('%H:%M') }} - {{ event.end_time.strftime('%H:%M') }}
+                                            </small>
+                                        </div>
+                                        {% if event.description %}
+                                            <p class="mt-1 mb-0 small">{{ event.description }}</p>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="alert alert-info mb-0">
+                                    <i class="bi bi-info-circle me-2"></i>No events scheduled for {{ display_date.strftime('%B %d') }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                <div class="weekdays">
-                    <div>Sun</div>
-                    <div>Mon</div>
-                    <div>Tue</div>
-                    <div>Wed</div>
-                    <div>Thu</div>
-                    <div>Fri</div>
-                    <div>Sat</div>
-                </div>
-                <div class="days" id="days"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script src="{{ url_for('static', filename='calendarscript.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 设置默认时间（当前时间和1小时后）
+        const now = new Date();
+        const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
+        
+        document.getElementById('start_time').value = formatDateTimeLocal(now);
+        document.getElementById('end_time').value = formatDateTimeLocal(oneHourLater);
+
+        // 时间验证函数
+        function validateTimes() {
+            const start = new Date(document.getElementById('start_time').value);
+            const end = new Date(document.getElementById('end_time').value);
+            const isValid = end > start;
+            
+            if (!isValid) {
+                alert('End time must be after start time');
+            }
+            return isValid;
+        }
+
+        // 格式化时间为本地日期时间格式
+        function formatDateTimeLocal(date) {
+            const pad = num => num.toString().padStart(2, '0');
+            return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        // 表单提交验证
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!validateTimes()) {
+                e.preventDefault();
+            }
+        });
+    
+    });
+    </script>
 {% endblock %}

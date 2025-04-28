@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -13,6 +14,12 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     #if you want to test the file locally, need to add your own secret key here [temporary solution]
+    # Add file upload configuration
+    app.config['UPLOAD_FOLDER'] = os.path.join(app.instance_path, 'uploads')
+    app.config['ALLOWED_EXTENSIONS'] = {'pdf', 'docx', 'jpg', 'png', 'txt'}
+
+    # Ensure that the upload directory exists
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     db.init_app(app)
     migrate.init_app(app, db)

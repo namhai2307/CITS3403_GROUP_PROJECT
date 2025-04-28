@@ -220,7 +220,7 @@
         document.getElementById('start_time').value = formatDateTimeLocal(now);
         document.getElementById('end_time').value = formatDateTimeLocal(oneHourLater);
 
-        // 时间验证函数
+        
         function validateTimes() {
             const start = new Date(document.getElementById('start_time').value);
             const end = new Date(document.getElementById('end_time').value);
@@ -232,13 +232,13 @@
             return isValid;
         }
 
-        // 格式化时间为本地日期时间格式
+        
         function formatDateTimeLocal(date) {
             const pad = num => num.toString().padStart(2, '0');
             return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
         }
 
-        // 表单提交验证
+        
         document.querySelector('form').addEventListener('submit', function(e) {
             if (!validateTimes()) {
                 e.preventDefault();

@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp
+from flask_wtf.file import FileField, FileAllowed,FileSize
+from wtforms import StringField, PasswordField, SubmitField,TextAreaField, DateTimeLocalField, SelectField, FileField
+from wtforms.validators import DataRequired, Email, EqualTo, Length, Regexp,DataRequired, ValidationError
+from datetime import datetime
 
 class LoginForm(FlaskForm):
     email = StringField(
@@ -47,3 +49,39 @@ class SignUpForm(FlaskForm):
         ]
     )
     submit = SubmitField('Sign Up')
+
+
+class EventForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired()])
+    description = TextAreaField('Description')
+    
+    # Using HTML5's timestamp local type
+    start_time = DateTimeLocalField(
+        'Start Time',
+        format='%Y-%m-%dT%H:%M',
+        validators=[DataRequired()],
+        render_kw={"type": "datetime-local"}
+    )
+    
+    end_time = DateTimeLocalField(
+        'End Time', 
+        format='%Y-%m-%dT%H:%M',
+        validators=[DataRequired()],
+        render_kw={"type": "datetime-local"}
+    )
+    
+    
+    
+    privacy_level = SelectField(
+        'Sharing',
+        choices=[
+            ('private', 'Private'),
+            ('friends', 'Friends'),
+            ('specific_users', 'Specific Users')
+        ],
+        default='private'
+    )
+
+    def validate_end_time(form, field):
+        if field.data <= form.start_time.data:
+            raise ValidationError("End time must be after start time")

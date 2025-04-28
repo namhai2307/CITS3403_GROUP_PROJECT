@@ -20,9 +20,11 @@ p a {
     border-radius: 10px;
     box-shadow: 0 0 2px #222222;
     overflow: hidden;
-    width: 600px;
+    width: 100%; /* Change to responsive width */
+    max-width: 600px; /* Add maximum width limit */
     color: black;
     padding: 20px;
+    margin: 0 auto; /* Center display */
 }
 
 .header{
@@ -35,6 +37,7 @@ p a {
 #month-year {
     font-weight: bold;
     font-size: 20px;
+    color: #333;
 }
 
 .calendar-header {
@@ -49,9 +52,12 @@ p a {
     text-align: center;
 }
 
-.weekdays, .days {
+.weekdays {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 10px 0;
+    font-weight: bold;
+    border-bottom: 1px solid #eee;
 }
 .days {
     height: 240px;
@@ -70,10 +76,7 @@ p a {
     background-color: rgb(97, 161, 204);
     color: white;
 }
-.days .today {
-    background-color: rgb(97, 161, 204);
-    color: white
-}
+
 
 .days .today:hover {
     background-color: white;

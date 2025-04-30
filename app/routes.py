@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, url_for, session, flash, request
+from flask import Blueprint, redirect, render_template, url_for, session, flash, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from . import  db
 from .forms import LoginForm, SignUpForm
@@ -74,10 +74,25 @@ def signup():
 def dashboard():
     return render_template('dashboard.html')
 
-@main.route('/profile')
-@login_required
+@main.route('/profile', methods=['GET', 'POST'])
 def profile():
-    return render_template('profile.html')
+    if request.method == 'POST':
+        search_query = request.form.get('search_query', '').strip()
+        if search_query:
+            # Query the database for users matching the search query
+            users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
+            return render_template('profile.html', users=users, search_query=search_query)
+    else:
+        # Render the page without search results
+        return render_template('profile.html', users=None)
+    
+@main.route('/search_users', methods=['POST'])
+def search_users():
+    search_query = request.json.get('search_query', '').strip()
+    if search_query:
+        users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
+        return jsonify([{'username': user.username, 'email': user.email} for user in users])
+    return jsonify([])
 
 @main.route('/logout')
 @login_required

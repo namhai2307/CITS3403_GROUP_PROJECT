@@ -1,45 +1,111 @@
-
-.container-box {
-    margin: 0 15px;
-    display: flex; /* Ensure the container uses flexbox */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    width: 100%; /* Ensure the container spans the full width */
-    height: 100%; /* Ensure the container spans the full height */
+/* General container styling */
+.container-fluid {
+    padding: 20px;
+    background-color: #f8f9fa;
 }
 
+#profile {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: repeating-linear-gradient(
+        to bottom,
+        #ffffff, /* White background */
+        #ffffff 40px, /* White stripe height */
+        #f8f9fa 40px, /* Light gray stripe start */
+        #f8f9fa 42px /* Light gray stripe height */
+    );
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form box styling */
 .form-box {
-    width: 100%;
-    max-width: 320px;
-    padding: 30px;
-    background: white;
-    border-radius: 5px;
-    align-self: center;
+    margin: 20px auto;
+    padding: 20px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
 }
 
 .input {
     width: 100%;
-    padding: 12px;
-    background: #eee;
-    border-radius: 6px;
-    border: none;
-    outline: none;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.profile-container .container-box .box {
-    align-items: center;
-    max-width: 300px;
-    background-color: white;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    margin: 1rem;
+    font-size: 16px;
 }
 
-.profile-container .container-box {
+.form-box button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-box button:hover {
+    background-color: #0056b3;
+}
+
+/* Friend container styling */
+.friend-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 35rem);
-    gap: 1.5rem;
-    align-items: flex-start;
-    justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+/* Friend card styling */
+.friend-card {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.friend-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    object-fit: cover;
+}
+
+.friend-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.friend-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.friend-card button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.friend-card button:hover {
+    background-color: #0056b3;
 }

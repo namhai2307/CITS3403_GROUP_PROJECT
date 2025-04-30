@@ -8,55 +8,45 @@
 {% block content %}
 
 <div class="container-fluid flex-grow-1">
-
     <div id="content-area" class="mt-4">
         <div id="profile" class="content-section">
-            <h2>Profile</h2>
-            <p>Welcome to your Profile. Here is where you customise your profile, add friends and more!</p>
-            <img src="{{ url_for('static', filename='images/dashboard_placeholder.png') }}" alt="Dashboard Image" class="img-fluid">
-            <div class="container-box">
-                <div class="form-box" id="find-friend">
-                    <form action="/submit" method="POST">
-                        <h2 style="text-align: center; margin-bottom: 20px">Find your friends</h2>
-                        <input type="text" placeholder="Enter your friend user name" required>
-                        <button type="submit" class="btn btn-primary">Find them</button>
-                    </form>
-                </div>
+            <h2 class="text-center">Find and Add Friends</h2>
+            <p class="text-center">Search for friends and add them to your network!</p>
+            
+            <!-- Friend Search Form -->
+            <div class="form-box" id="find-friend">
+                <form action="{{ url_for('main.profile') }}" method="POST">
+                    <h3 class="text-center mb-4">Find Your Friends</h3>
+                    <input type="text" id="search-input" name="search_query" class="input" placeholder="Enter your friend's username" required>
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </form>
             </div>
-            <div class="profile-container">
-                <div class="container-box">
-                    <div class="box">
-                        <div class="username">
-                            <div>
-                                <h3>Ben Dover</h3>
-                            </div>
+            <!-- Friend Cards -->
+            <div class="friend-container">
+                {%if users%}
+                    {%for user in users%}
+                        <div class="friend-card">
+                            <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic">
+                            <h3 class="friend-name">{{ user.username }}</h3>
+                            <p class="friend-title">{{ user.email }}</p>
+                            <button class="btn btn-primary">Add Friend</button>
                         </div>
-                        <h3 class="job-title">Professional Unemployer</h3>
-                        <img src="#" alt="Profile Picture">
-                        <div class="btn btn-primary">Add Friend</div>
-                    </div>
-                    <div class="box">
-                        <div class="username">
-                            <div>
-                                <h3>John Doe</h3>
-                            </div>
-                        </div>
-                        <h3 class="job-title">Software Engineer</h3>
-                        <img src="#" alt="Profile Picture">
-                        <div class="btn btn-primary">Add Friend</div>
-                    </div>
-                    <div class="box">
-                        <div class="username">
-                            <div>
-                                <h3>Jane Smith</h3>
-                            </div>
-                        </div>
-                        <h3 class="job-title">Graphic Designer</h3>
-                        <img src="#" alt="Profile Picture">
-                        <div class="btn btn-primary">Add Friend</div>
-                    </div>
-                </div>
+                    {%endfor%}
+                {%else%}
+                    <p class="text-center mt-4">No user found. Try another user name</p>
+                {%endif%}
+                <!-- Add more friend cards as needed -->
             </div>
         </div>
     </div>
+</div>
+
+<script>
+    document.getElementById('search-input').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // prevent default
+        }
+    });
+</script>
+
 {% endblock %}

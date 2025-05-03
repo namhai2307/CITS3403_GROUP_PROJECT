@@ -6,7 +6,7 @@ from .forms import LoginForm, SignUpForm,EventForm
 from .models import User,Event  # Import User Model
 
 from werkzeug.security import check_password_hash, generate_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 import os
 
@@ -149,12 +149,37 @@ def dashboard():
         Event.start_time <= end_of_day
     ).order_by(Event.start_time).all()
 
+    # Query events for the entire month
+    start_of_month = datetime(display_date.year, display_date.month, 1)
+    if display_date.month == 12:
+        end_of_month = datetime(display_date.year + 1, 1, 1) - timedelta(seconds=1)
+    else:
+        end_of_month = datetime(display_date.year, display_date.month + 1, 1) - timedelta(seconds=1)
 
+    events = Event.query.filter(
+        Event.user_id == current_user.id,
+        Event.start_time >= start_of_month,
+        Event.start_time <= end_of_month
+    ).order_by(Event.start_time).all()
 
-    # When GET request or verification fails
-    return render_template('dashboard.html', form=form, 
-                         events=events,
-                         display_date=display_date)
+    # Calculate total duration of events for each day
+    event_durations = {}
+    for event in events:
+        day = event.start_time.strftime('%Y-%m-%d')  # e.g., "2025-05-02"
+        duration = (event.end_time - event.start_time).total_seconds() / 3600  # Duration in hours
+        if day not in event_durations:
+            event_durations[day] = 0
+        event_durations[day] += duration
+
+    # Pass data to the template
+    return render_template(
+        'dashboard.html',
+        form=form,
+        events=events,
+        display_date=display_date,
+        event_durations=event_durations,  # Pass durations instead of counts
+        timedelta=timedelta  
+    )
 
 @main.route('/help')
 def help():

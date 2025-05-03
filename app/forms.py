@@ -39,6 +39,9 @@ class SignUpForm(FlaskForm):
         validators=[
             DataRequired(),
             Length(min=12, max=128),
+            Regexp('^(?=.*[A-Z]).*', message='Password must contain an uppercase letter.'),
+            Regexp('^(?=.*[a-z]).*', message='Password must contain a lowercase letter.'),
+            Regexp('^(?=.*[0-9]).*', message='Password must contain a number.'),
         ]
     )
     confirm_password = PasswordField(
@@ -49,6 +52,32 @@ class SignUpForm(FlaskForm):
         ]
     )
     submit = SubmitField('Sign Up')
+
+class ChangePasswordForm(FlaskForm):
+    oldPassword = PasswordField(
+        'Password',
+        validators=[
+            DataRequired(),
+            Length(min=12, max=128),
+        ]
+    )
+    newPassword = PasswordField(
+        'Password',
+        validators=[
+            DataRequired(),
+            Length(min=12, max=128),
+            Regexp('^(?=.*[A-Z]).*', message='Password must contain an uppercase letter.'),
+            Regexp('^(?=.*[a-z]).*', message='Password must contain a lowercase letter.'),
+            Regexp('^(?=.*[0-9]).*', message='Password must contain a number.'),
+        ]
+    )
+    confirmNewPassword = PasswordField(
+        'Confirm Password',
+        validators=[
+            DataRequired(),
+            EqualTo('password', message="Passwords must match.")
+        ]
+    )
 
 
 class EventForm(FlaskForm):

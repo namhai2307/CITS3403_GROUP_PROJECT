@@ -140,3 +140,7 @@ def dashboard():
     return render_template('dashboard.html', form=form, 
                          events=events,
                          display_date=display_date)
+
+@main.route('/help')
+def help():
+    return render_template('help.html')

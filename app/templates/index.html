@@ -21,6 +21,9 @@
   <!-- Style sheet (CSS) for profile.html -->
   <link rel="stylesheet" href="{{ url_for('static', filename='profilestyle.css') }}">
 
+  <!-- Style sheet (CSS) for help.html -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='helpstyle.css') }}">
+
   <!-- Style sheet (CSS) for dashboard.html -->
   <script src="{{ url_for('static', filename='dashboardscript.js') }}"></script>
   <link rel="stylesheet" href="{{ url_for('static', filename='calendarstyle.css') }}">
@@ -59,6 +62,7 @@
             <a class="btn btn-outline-primary" href="{{ url_for('main.login') }}">Login/Signup</a>
         {% endif %}
         <a class="btn btn-outline-primary" href="{{ url_for('main.profile') }}">Profile</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('main.help') }}">Help</a>
       </nav>
     </div>
 

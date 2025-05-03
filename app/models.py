@@ -28,3 +28,27 @@ class User(UserMixin, db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+#start_time/end_time uses the DATE type (storing both date and time)
+#
+# 
+#privacey_level reserved for subsequent permission control
+class Event(db.Model):
+    __tablename__ = 'events'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    start_time = db.Column(db.DateTime, nullable=False)  # Include date and time
+    end_time = db.Column(db.DateTime, nullable=False)
+    
+    privacy_level = db.Column(db.String(20), default='private')  # private/friends/specific_users
+    
+    # Associated users
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref=db.backref('events', lazy=True))
+
+    def __repr__(self):
+        return f'<Event {self.title} ({self.start_time} to {self.end_time})>'
+    

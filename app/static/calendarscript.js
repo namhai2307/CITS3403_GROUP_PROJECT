@@ -4,10 +4,21 @@ function showForm(formID) {
 }
 
 document.addEventListener('DOMContentLoaded', function(){
+
     const monthYear = document.getElementById("month-year");
     const daysContainer = document.getElementById("days");
     const prevButton = document.getElementById('prev');
     const nextButton = document.getElementById('next');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlDate = urlParams.get('date');
+    let selectedDate = urlDate ? new Date(urlDate) : null;
+
+    // If there is a URL date parameter, the initial display shows the month in which the date is located
+    let currentDate = urlDate ? new Date(urlDate) : new Date();
+
+
+    
     console.log(monthYear); //for debug
     const months = [
         "January", 
@@ -24,8 +35,10 @@ document.addEventListener('DOMContentLoaded', function(){
         "December"
     ];
 
-    let currentDate = new Date();
+    
     let today = new Date();
+    
+
 
     function renderCalendar(date) {
         const year = date.getFullYear();
@@ -49,9 +62,29 @@ document.addEventListener('DOMContentLoaded', function(){
         for (let i = 1; i <= lastDay; i++){
             const dayDiv = document.createElement('div');
             dayDiv.textContent = i;
-            if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-                dayDiv.classList.add('today');
-            }
+            dayDiv.classList.add('day-number'); // Add clickable classes
+
+            
+            // Highlight Logic
+            const isSelected = selectedDate && 
+                             i === selectedDate.getDate() && 
+                             month === selectedDate.getMonth();
+            
+            
+
+            if (isSelected) dayDiv.classList.add('selected-day');
+           
+
+            // Add click event
+            dayDiv.addEventListener('click', function() {
+                
+                if (month !== currentDate.getMonth()) {
+                    currentDate = new Date(year, month, 1);
+                }
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+                window.location.href = `/dashboard?date=${dateStr}`;
+            });
+
             daysContainer.appendChild(dayDiv);
         }
         // next Month:
@@ -75,5 +108,22 @@ document.addEventListener('DOMContentLoaded', function(){
         renderCalendar(currentDate);
     });
 
+    
+    window.addEventListener('popstate', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const newUrlDate = urlParams.get('date');
+        
+        
+        if ((newUrlDate && !selectedDate) || 
+            (!newUrlDate && selectedDate) || 
+            (newUrlDate && selectedDate && newUrlDate !== selectedDate.toISOString().split('T')[0])) {
+            selectedDate = newUrlDate ? new Date(newUrlDate) : null;
+            currentDate = newUrlDate ? new Date(newUrlDate) : new Date();
+            renderCalendar(currentDate);
+        }
+    });
+
+    
     renderCalendar(currentDate);
+
     });

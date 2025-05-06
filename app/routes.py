@@ -75,7 +75,6 @@ def signup():
     return render_template('sign_up.html', form=form)
 
 
-
 @main.route('/profile', methods=['GET', 'POST'])
 def profile():
     if request.method == 'POST':
@@ -116,34 +115,30 @@ def dashboard():
     except ValueError:
         display_date = datetime.utcnow().date()
 
-
     # Process form submission
     if form.validate_on_submit():
         try:
-            
             event = Event(
                 title=form.title.data,
                 start_time=form.start_time.data,
                 end_time=form.end_time.data,
                 description=form.description.data,
-                
-                privacy_level=form.privacy_level.data,  
+                privacy_level=form.privacy_level.data,
                 user_id=current_user.id
             )
             db.session.add(event)
             db.session.commit()
             flash('Event created successfully!', 'success')
-            return redirect(url_for('main.dashboard'))
-            
+            return redirect(url_for('main.dashboard', date=display_date.strftime('%Y-%m-%d')))
         except Exception as e:
             db.session.rollback()
             flash(f'Error: {str(e)}', 'danger')
-    
+
     # Query the events of the day
     start_of_day = datetime.combine(display_date, datetime.min.time())
     end_of_day = datetime.combine(display_date, datetime.max.time())
 
-    events = Event.query.filter(
+    daily_events = Event.query.filter(
         Event.user_id == current_user.id,
         Event.start_time >= start_of_day,
         Event.start_time <= end_of_day
@@ -156,7 +151,7 @@ def dashboard():
     else:
         end_of_month = datetime(display_date.year, display_date.month + 1, 1) - timedelta(seconds=1)
 
-    events = Event.query.filter(
+    monthly_events = Event.query.filter(
         Event.user_id == current_user.id,
         Event.start_time >= start_of_month,
         Event.start_time <= end_of_month
@@ -164,7 +159,7 @@ def dashboard():
 
     # Calculate total duration of events for each day
     event_durations = {}
-    for event in events:
+    for event in monthly_events:
         day = event.start_time.strftime('%Y-%m-%d')  # e.g., "2025-05-02"
         duration = (event.end_time - event.start_time).total_seconds() / 3600  # Duration in hours
         if day not in event_durations:
@@ -175,12 +170,77 @@ def dashboard():
     return render_template(
         'dashboard.html',
         form=form,
-        events=events,
+        events=daily_events,
         display_date=display_date,
-        event_durations=event_durations,  # Pass durations instead of counts
-        timedelta=timedelta  
+        event_durations=event_durations,
+        timedelta=timedelta
     )
 
 @main.route('/help')
 def help():
     return render_template('help.html')
+
+# For shared visualisation between friends 
+@main.route('/visualisation')
+@login_required
+def visualisation():
+    friends = User.query.filter(User.id != current_user.id).all()  # Exclude the current user
+    return render_template('visualisation.html', friends=friends, event_durations={})
+
+@main.route('/api/friend_calendar/<int:friend_id>')
+@login_required
+def friend_calendar(friend_id):
+    # Ensure the friend exists
+    friend = User.query.get_or_404(friend_id)
+
+    # Query events for the friend's calendar
+    start_of_month = datetime.utcnow().replace(day=1)
+    end_of_month = (start_of_month + timedelta(days=31)).replace(day=1) - timedelta(seconds=1)
+
+    events = Event.query.filter(
+        Event.user_id == friend.id,
+        Event.start_time >= start_of_month,
+        Event.start_time <= end_of_month
+    ).all()
+
+    # Calculate event durations for the heatmap
+    event_durations = {}
+    for event in events:
+        day = event.start_time.strftime('%Y-%m-%d')
+        duration = (event.end_time - event.start_time).total_seconds() / 3600
+        event_durations[day] = event_durations.get(day, 0) + duration
+
+    return jsonify({'eventDurations': event_durations})
+
+@main.route('/api/events')
+@login_required
+def get_events():
+    date_str = request.args.get('date')
+    if not date_str:
+        return jsonify({'error': 'Date is required'}), 400
+
+    try:
+        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return jsonify({'error': 'Invalid date format'}), 400
+
+    start_of_day = datetime.combine(selected_date, datetime.min.time())
+    end_of_day = datetime.combine(selected_date, datetime.max.time())
+
+    events = Event.query.filter(
+        Event.user_id == current_user.id,
+        Event.start_time >= start_of_day,
+        Event.start_time <= end_of_day
+    ).order_by(Event.start_time).all()
+
+    events_data = [
+        {
+            'title': event.title,
+            'start_time': event.start_time.strftime('%H:%M'),
+            'end_time': event.end_time.strftime('%H:%M'),
+            'description': event.description
+        }
+        for event in events
+    ]
+
+    return jsonify({'events': events_data})

@@ -50,7 +50,7 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
       <header>
-        <h5 class="m-0"> Who is free? </h5>
+        <h5 class="m-0 text-nowrap"> Who is free? </h5>
       </header>
 
       <!-- Navigation Bar -->
@@ -58,6 +58,7 @@
         <a class="btn btn-outline-primary" href="{{ url_for('main.index') }}">Home</a>
         {% if session.get('logged_in') %}
             <a class="btn btn-outline-primary" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a class="btn btn-outline-primary" href="{{ url_for('main.visualisation') }}">Visualisation</a>
             <a class="btn btn-outline-primary" href="{{ url_for('main.logout') }}">Logout</a>
         {% else %}
             <a class="btn btn-outline-primary" href="{{ url_for('main.login') }}">Login/Signup</a>

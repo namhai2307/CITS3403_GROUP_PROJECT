@@ -3,11 +3,12 @@ function showForm(formID) {
     document.getElementById(formID).classList.add("active")
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const monthYear = document.getElementById("month-year");
     const daysContainer = document.getElementById("days");
     const prevButton = document.getElementById('prev');
     const nextButton = document.getElementById('next');
+    const todayEventsContainer = document.getElementById('today-events'); // Container for today's events
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlDate = urlParams.get('date');
@@ -62,9 +63,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Add click event
-            dayDiv.addEventListener('click', function() {
+            dayDiv.addEventListener('click', function () {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                window.location.href = `/dashboard?date=${dateStr}`;
+                fetchEventsForDay(dateStr); // Fetch and display events for the selected day
             });
 
             daysContainer.appendChild(dayDiv);
@@ -80,19 +81,62 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Fetch and display events for a specific day
+    function fetchEventsForDay(dateStr) {
+        // Update the URL with the selected date
+        const url = new URL(window.location);
+        url.searchParams.set('date', dateStr);
+        window.history.pushState({}, '', url);
+
+        // Update the schedule header on the frontend
+        const scheduleHeader = document.querySelector('#schedule-section h5');
+        const newDate = new Date(dateStr);
+        // Format the date as "Weekday, Month day" (using en-US locale here)
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        const formattedDate = newDate.toLocaleDateString('en-US', options);
+        scheduleHeader.innerHTML = `<i class="bi bi-list-task me-2"></i>${formattedDate} Schedule`;
+
+        // Clear the today's events container
+        const todayEventsContainer = document.getElementById('today-events');
+        todayEventsContainer.innerHTML = '';
+
+        // Fetch events for the selected day
+        fetch(`/api/events?date=${dateStr}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.events && data.events.length > 0) {
+                    data.events.forEach(event => {
+                        const eventDiv = document.createElement('div');
+                        eventDiv.classList.add('event-card', 'mb-3', 'p-2', 'border', 'rounded');
+                        eventDiv.innerHTML = `
+                            <div class="d-flex justify-content-between">
+                                <strong>${event.title}</strong>
+                                <small class="text-muted">${event.start_time} - ${event.end_time}</small>
+                            </div>
+                            ${event.description ? `<p class="mt-1 mb-0 small">${event.description}</p>` : ''}
+                        `;
+                        todayEventsContainer.appendChild(eventDiv);
+                    });
+                } else {
+                    // Clear container if no events found
+                    todayEventsContainer.innerHTML = '';
+                }
+            })
+            .catch(error => console.error('Error fetching events:', error));
+    }
+
     // Previous button event listener - toggle previous month
-    prevButton.addEventListener('click', function() {
+    prevButton.addEventListener('click', function () {
         currentDate.setMonth(currentDate.getMonth() - 1);
         renderCalendar(currentDate);
     });
 
     // Next button event listener - toggle next month
-    nextButton.addEventListener('click', function() {
+    nextButton.addEventListener('click', function () {
         currentDate.setMonth(currentDate.getMonth() + 1);
         renderCalendar(currentDate);
     });
 
     // Initial render
     renderCalendar(currentDate);
-
 });

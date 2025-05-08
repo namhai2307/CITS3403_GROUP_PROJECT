@@ -31,7 +31,12 @@ flask db migrate -m "Initial user table"
 flask db migrate -m "Events Table"
 flask db upgrade
 ```
-5. Run the application on your localhost
+4. Setting you own secret key in your local environment
+Type in the following code in the terminal/virtual environment:
+`export SECRET_KEY='your-production-secret-key'`
+***NOTE:** Make sure to replace the "your-production-secret-key" to your own secret key message.
+Here is an example: `export SECRET_KEY='CITS3403isfun!'`
+6. Run the application on your localhost
 `flask run`
 
 ### How to run the tests

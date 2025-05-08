@@ -11,6 +11,12 @@
     margin: 0 auto;
 }
 
+/* Adjust the card width for better responsiveness */
+.card {
+    max-width: 100%;
+    width: 100%;
+}
+
 /* Calendar Grid */
 .calendar-grid {
     margin-bottom: 20px;

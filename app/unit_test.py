@@ -24,10 +24,10 @@ class PageRedirectionTests(unittest.TestCase):
         initializes the application context, and sets up the in-memory
         SQLite database.
         """
-        testApp = create_app(TestConfig)  # Create the app with TestConfig
-        self.app_context = testApp.app_context()  # Create app context
-        self.app_context.push()  # Push the app context
-        db.create_all()  # Create all tables
+        testApp = create_app(TestConfig)  
+        self.app_context = testApp.app_context() 
+        self.app_context.push() 
+        db.create_all()  
 
     def tearDown(self):
         """
@@ -36,9 +36,9 @@ class PageRedirectionTests(unittest.TestCase):
         Removes the database session, drops all tables, and pops the
         application context.
         """
-        db.session.remove()  # Remove the session
-        db.drop_all()  # Drop all tables
-        self.app_context.pop()  # Pop the app context
+        db.session.remove() 
+        db.drop_all()
+        self.app_context.pop() 
 
     def test_index_route(self):
         """
@@ -103,13 +103,12 @@ class DatabaseTests(unittest.TestCase):
         can be correctly hashed and verified.
         """
         user = User(username="testuser", email="test@example.com")
-        user.set_password("password123")
+        user.set_password("Password1234!")
         db.session.add(user)
         db.session.commit()
 
-        # Verify password
-        self.assertTrue(user.check_password("password123"))
-        self.assertFalse(user.check_password("wrongpassword"))
+        self.assertTrue(user.check_password("Password1234!"))
+        self.assertFalse(user.check_password("Wrongpassword"))
 
     def test_create_event(self):
         """
@@ -119,7 +118,7 @@ class DatabaseTests(unittest.TestCase):
         and verifies that the event is correctly linked to the user.
         """
         user = User(username="testuser", email="test@example.com")
-        user.set_password("password123")
+        user.set_password("Password1234!")
         db.session.add(user)
         db.session.commit()
 
@@ -134,7 +133,6 @@ class DatabaseTests(unittest.TestCase):
         db.session.add(event)
         db.session.commit()
 
-        # Verify the event is associated with the user
         self.assertEqual(len(user.events), 1)
         self.assertEqual(user.events[0].title, "Test Event")
         self.assertEqual(user.events[0].privacy_level, "private")

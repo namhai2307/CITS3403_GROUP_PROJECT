@@ -8,7 +8,6 @@ from .models import User,Event  # Import User Model
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
-import os
 
 #Initialization blueprint (named main to keep it concise)
 main = Blueprint('main', __name__)

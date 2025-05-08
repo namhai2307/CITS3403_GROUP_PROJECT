@@ -2,7 +2,7 @@
 
 {% block head %}
     <title>Who is Free? - Dashboard </title>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 {% endblock %}
 
 {% block content %}
@@ -108,16 +108,24 @@
                         <div id="today-events">
                             {% if events %}
                                 {% for event in events %}
-                                    <div class="event-card mb-3 p-2 border rounded">
+                                <div class="event-card mb-3 p-2 border rounded" data-event-id="{{ event.id }}">
                                         <div class="d-flex justify-content-between">
-                                            <strong>{{ event.title }}</strong>
+                                            <strong class="event-title">{{ event.title }}</strong>
                                             <small class="text-muted">
                                                 {{ event.start_time.strftime('%H:%M') }} - {{ event.end_time.strftime('%H:%M') }}
                                             </small>
                                         </div>
                                         {% if event.description %}
-                                            <p class="mt-1 mb-0 small">{{ event.description }}</p>
+                                            <p class="mt-1 mb-0 small event-description">{{ event.description }}</p>
                                         {% endif %}
+                                        <div class="event-actions mt-2 text-end">
+                                            <button class="btn btn-sm btn-outline-primary edit-btn">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-danger delete-btn">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </div>
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -133,10 +141,52 @@
     </div>
 </div>
 
+<!-- Edit Event Modal -->
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editEventForm">
+          <input type="hidden" id="edit-event-id">
+          <div class="mb-3">
+            <label for="edit-title" class="form-label">Title</label>
+            <input type="text" class="form-control" id="edit-title" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-description" class="form-label">Description</label>
+            <textarea class="form-control" id="edit-description" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="edit-start-time" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" id="edit-start-time" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-end-time" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" id="edit-end-time" required>
+          </div>
+          <div class="mb-3">
+            <label for="edit-privacy-level" class="form-label">Privacy Level</label>
+            <select class="form-select" id="edit-privacy-level">
+              <option value="private">Private</option>
+              <option value="friends">Friends</option>
+              <option value="public">Public</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Save Changes</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Rendering the calendar to show event durations with heatmap -->
 <script>
     const eventDurations = JSON.parse('{{event_durations|tojson|safe}}');
-    rendercalendar(eventDurations);
+    // renderCalendar(eventDurations);
 </script>
 
 {% endblock %}

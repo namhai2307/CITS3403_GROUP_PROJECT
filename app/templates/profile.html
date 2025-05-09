@@ -29,7 +29,10 @@
                             <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic">
                             <h3 class="friend-name">{{ user.username }}</h3>
                             <p class="friend-title">{{ user.email }}</p>
-                            <button class="btn btn-primary">Add Friend</button>
+                            <form action="{{ url_for('main.add_friend') }}" method="POST">
+                                <input type="hidden" name="friend_id" value="{{ user.id }}">
+                                <button type="submit" class="btn btn-primary">Add Friend</button>
+                            </form>
                         </div>
                     {%endfor%}
                 {%else%}
@@ -40,13 +43,6 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('search-input').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // prevent default
-        }
-    });
-</script>
+<script src="{{ url_for('static', filename='profilescript.js') }}"></script>
 
 {% endblock %}

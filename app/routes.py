@@ -75,6 +75,7 @@ def signup():
 
 
 @main.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     if request.method == 'POST':
         search_query = request.form.get('search_query', '').strip()

@@ -12,11 +12,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
 from .config import DevelopmentConfig
+from flask_wtf import CSRFProtect
 
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = 'main.login'  
+csrf = CSRFProtect()
 
 def create_app(config_class=None):
     """
@@ -43,6 +45,11 @@ def create_app(config_class=None):
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
+    csrf.init_app(app)
+    
+    login_manager.login_view = 'main.login'
+    login_manager.login_message_category = 'info'
+    
     from .routes import main as main_blueprint
     app.register_blueprint(main_blueprint, url_prefix='/')
 

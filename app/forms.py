@@ -102,13 +102,13 @@ class EventForm(FlaskForm):
     
     
     privacy_level = SelectField(
-        'Privacy Level',
+        'Sharing',
         choices=[
             ('private', 'Private'),
             ('friends', 'Friends'),
             ('specific_users', 'Specific Users')
         ],
-        validators=[DataRequired()]
+        default='private'
     )
 
     def validate_end_time(form, field):

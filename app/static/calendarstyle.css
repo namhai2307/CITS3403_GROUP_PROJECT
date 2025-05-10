@@ -1,33 +1,29 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/*
-p {
-    font-size: 14.5px;
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-p a {
-    color: rgb(6, 115, 240);
-}
-*/
-.calendar-container{
+/* Calendar Container */
+.calendar-container {
     background-color: white;
     border-radius: 10px;
-    box-shadow: 0 0 2px #222222;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    width: 100%; /* Change to responsive width */
-    max-width: 600px; /* Add maximum width limit */
+    width: 100%;
+    max-width: 600px;
     color: black;
     padding: 20px;
-    margin: 0 auto; /* Center display */
+    margin: 0 auto;
 }
 
-.header{
+/* Adjust the card width for better responsiveness */
+.card {
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+    margin-bottom: 20px;
+}
+
+/* Header */
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -40,54 +36,81 @@ p a {
     color: #333;
 }
 
-.calendar-header {
-    display: flex;
-    justify-content: center; /* Center horizontally */
-    margin-bottom: 10px; /* Add spacing below the title */
-}
-
-.calendar-title {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-}
-
+/* Weekdays Row */
 .weekdays {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     padding: 10px 0;
     font-weight: bold;
     border-bottom: 1px solid #eee;
+    color: #333;
+    text-align: center;
 }
+
+.weekdays div {
+    flex: 1;
+    text-align: center;
+}
+
+/* Days Grid */
 .days {
     height: 240px;
 }
-.weekdays div, .days div {
+
+.days div:hover, .days div:focus {
+    background-color: red;
+    color: rgb(212, 18, 18);
+}
+
+.days div {
     width: 14.28%;
     text-align: center;
     padding: 10px 0;
     border-radius: 5px;
-}
-.days div {
     cursor: pointer;
-    transition: background-color 0.3s;
-}
-.days div:hover {
-    background-color: rgb(97, 161, 204);
-    color: white;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-
-.days .today:hover {
+/* Day Cell Styling */
+.day-number {
+    align-items: center;
+    text-align: center;
     background-color: white;
     color: black;
 }
 
-.fade {
-    color: black;
+/* Today's Events Section */
+#today-events {
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Event Card Styling */
+.event-card {
     background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    color: black;
 }
-.fade:hover {
-    color: white;
-    background-color: rgb(97, 161, 204);
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .day-number {
+        height: 60px;
+        width: 60px;
+        font-size: 0.8rem;
+    }
+
+    .calendar-grid {
+        margin-bottom: 15px;
+    }
+
+    #today-events {
+        margin-top: 15px;
+    }
 }
+
+

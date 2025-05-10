@@ -67,23 +67,22 @@ document.addEventListener('DOMContentLoaded', function(){
 
     function renderEventList(events) {
         const container = document.getElementById('today-events');
-        
         container.innerHTML = events.map(event => `
             <div class="event-card mb-3 p-2 border rounded" data-event-id="${event.id}">
                 <div class="d-flex justify-content-between">
-                    <strong>${event.title}</strong>
+                    <strong class="event-title">${event.title}</strong>
                     <small class="text-muted">
                         ${new Date(event.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} - 
                         ${new Date(event.end_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                     </small>
                 </div>
-                ${event.description ? `<p class="mt-1 mb-0 small">${event.description}</p>` : ''}
+                ${event.description ? `<p class="mt-1 mb-0 small event-description">${event.description}</p>` : ''}
                 <div class="event-actions mt-2 text-end">
-                    <button class="btn btn-sm btn-outline-primary edit-event-btn">
-                        <i class="bi bi-pencil"></i> edit
+                    <button class="btn btn-sm btn-outline-primary edit-btn">
+                        <i class="bi bi-pencil"></i> Edit
                     </button>
-                    <button class="btn btn-sm btn-outline-danger delete-event-btn">
-                        <i class="bi bi-trash"></i> delete
+                    <button class="btn btn-sm btn-outline-danger delete-btn">
+                        <i class="bi bi-trash"></i> Delete
                     </button>
                 </div>
             </div>
@@ -114,8 +113,14 @@ document.addEventListener('DOMContentLoaded', function(){
         if (confirm('Are you sure to delete this event?')) {
             fetch(`/api/events/${eventId}`, { 
                 method: 'DELETE',
-                headers: { 'X-CSRFToken': '{{ csrf_token() }}' }
-            }).then(response => response.ok && loadEventsForDate(getSelectedDate()));
+                headers: { 'X-CSRFToken': document.querySelector('meta[name="csrf-token"]').content }
+            }).then(response => {
+                if (response.ok) {
+                    loadEventsForDate(getSelectedDate());
+                } else {
+                    console.error('Failed to delete event:', response.statusText);
+                }
+            }).catch(console.error);
         }
     }
 
@@ -167,13 +172,9 @@ document.addEventListener('DOMContentLoaded', function(){
             }
         })
     });
-
-    
-
-    
-
     
     renderCalendar(currentDate);
     
 });
+
 

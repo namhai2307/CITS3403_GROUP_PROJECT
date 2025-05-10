@@ -29,7 +29,17 @@
                             <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic">
                             <h3 class="friend-name">{{ user.username }}</h3>
                             <p class="friend-title">{{ user.email }}</p>
-                            <button class="btn btn-primary">Add Friend</button>
+                            <form action="{{ url_for('main.add_friend') }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="friend_id" value="{{ user.id }}">
+                                {% if friends and user in friends %}
+                                    <button type="submit" class="btn btn-secondary" disabled>Already Friends</button>
+                                {% elif pending_requests and user.id in pending_requests | map(attribute='user_id') | list %}
+                                    <button type="submit" class="btn btn-warning" disabled>Request Pending</button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-primary">Add Friend</button>
+                                {% endif %}
+                            </form>
                         </div>
                     {%endfor%}
                 {%else%}
@@ -37,16 +47,51 @@
                 {%endif%}
                 <!-- Add more friend cards as needed -->
             </div>
+
+            <!-- Friend List Section -->
+            <div class="friend-list mt-4">
+                <h3>Your Friends</h3>
+                {% if friends and friends|length > 0 %}
+                    <ul class="list-group">
+                        {% for friend in friends %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic me-2" style="width:32px;height:32px;">
+                                <span>{{ friend.username }} ({{ friend.email }})</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">You have no friends yet.</p>
+                {% endif %}
+           
+            </div>
+
+            <!-- Pending Friend Requests Section -->
+            <div class="pending-requests mt-4">
+                <h3>Pending Friend Requests</h3>
+                {% if pending_pairs and pending_pairs|length > 0 %}
+                    <ul class="list-group">
+                        {% for req, user in pending_pairs %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic me-2" style="width:32px;height:32px;">
+                                <span>{{ user.username }} ({{ user.email }})</span>
+                                <form action="{{ url_for('main.accept_friend', friendship_id=req.id) }}" method="POST" class="ms-auto me-2">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-success btn-sm">Accept</button>
+                                </form>
+                                <form action="{{ url_for('main.delete_friend_request', friendship_id=req.id) }}" method="POST" class="ms-2">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No pending requests.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('search-input').addEventListener('keypress', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // prevent default
-        }
-    });
-</script>
 
 {% endblock %}

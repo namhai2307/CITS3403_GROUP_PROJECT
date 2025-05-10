@@ -8,8 +8,8 @@ event management, and API endpoints. It uses Flask blueprints to organize the ro
 from flask import Blueprint, abort, redirect, render_template, url_for, session, flash, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from . import  db
-from .forms import LoginForm, SignUpForm,EventForm  
-from .models import User,Event 
+from .forms import LoginForm, SignUpForm, EventForm 
+from .models import User,Event, Friendship
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta
 
@@ -91,18 +91,36 @@ def signup():
 @main.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    """
-    Render the user profile page.
+    # Friends (accepted)
+    friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
+    friends = [User.query.get(f.friend_id) for f in friendships]
 
-    Allows searching for other users by username.
-    """
+
+    # Pending requests received (where current user is the recipient)
+    pending_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
+    pending_pairs = [(req, User.query.get(req.user_id)) for req in pending_requests]
+
+    # ...existing search logic...
     if request.method == 'POST':
         search_query = request.form.get('search_query', '').strip()
         if search_query:
             users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
-            return render_template('profile.html', users=users, search_query=search_query)
+            return render_template(
+                'profile.html',
+                users=users,
+                search_query=search_query,
+                friends=friends,
+                pending_requests=pending_requests,
+                pending_pairs=pending_pairs
+            )
     else:
-        return render_template('profile.html', users=None)
+        return render_template(
+            'profile.html',
+            users=None,
+            friends=friends,
+            pending_requests=pending_requests,
+            pending_pairs=pending_pairs
+        )
     
 @main.route('/search_users', methods=['POST'])
 def search_users():
@@ -264,12 +282,13 @@ def update_event(event_id):
 def delete_event(event_id):
     event = Event.query.get_or_404(event_id)
     if event.created_by != current_user.id:
+        print(f"Permission denied: User {current_user.id} tried to delete event {event_id} created by {event.created_by}")
         abort(403)
-        
-    db.session.delete(event)
-    db.session.commit()  
-    return jsonify({'status': 'deleted'})
 
+    print(f"Deleting event {event_id} by user {current_user.id}")
+    db.session.delete(event)
+    db.session.commit()
+    return jsonify({'status': 'deleted'})
 
 
 
@@ -357,3 +376,48 @@ def get_events():
     ]
 
     return jsonify({'events': events_data})
+
+#Add friend section
+@main.route('/add_friend', methods=['POST'])
+@login_required
+def add_friend():
+    friend_id = request.form.get('friend_id')
+    if friend_id and int(friend_id) != current_user.id:
+        existing = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend_id).first()
+        if not existing:
+            friendship = Friendship(user_id=current_user.id, friend_id=friend_id, status='pending')
+            db.session.add(friendship)
+            db.session.commit()
+            flash('Friend request sent!', 'success')
+        else:
+            flash('Friend request already sent or you are already friends.', 'info')
+    else:
+        flash('Invalid friend ID.', 'error')
+    return redirect(url_for('main.profile'))
+
+@main.route('/accept_friend/<int:friendship_id>', methods=['POST'])
+@login_required
+def accept_friend(friendship_id):
+    friendship = Friendship.query.get_or_404(friendship_id)
+    if friendship.friend_id == current_user.id and friendship.status == 'pending':
+        friendship.status = 'accepted'
+        # Make it mutual
+        mutual = Friendship(user_id=current_user.id, friend_id=friendship.user_id, status='accepted')
+        db.session.add(mutual)
+        db.session.commit()
+        flash('Friend request accepted!', 'success')
+    else:
+        flash('Invalid request.', 'error')
+    return redirect(url_for('main.profile'))
+
+@main.route('/delete_friend_request/<int:friendship_id>', methods=['POST'])
+@login_required
+def delete_friend_request(friendship_id):
+    friendship = Friendship.query.get_or_404(friendship_id)
+    if friendship.friend_id == current_user.id and friendship.status == 'pending':
+        db.session.delete(friendship)
+        db.session.commit()
+        flash('Friend request deleted.', 'info')
+    else:
+        flash('Invalid request.', 'error')
+    return redirect(url_for('main.profile'))

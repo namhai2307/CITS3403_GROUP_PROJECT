@@ -30,10 +30,6 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-#start_time/end_time uses the DATE type (storing both date and time)
-#
-# 
-#privacey_level reserved for subsequent permission control
 class Event(db.Model):
     __tablename__ = 'events'
     

@@ -2,97 +2,19 @@
 
 {% block head %}
     <title>Who is Free? - Dashboard </title>
-
-    <!-- TODO: ask to delete this part -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <!-- Add Font Awesome icon library -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Add Bootstrap icon library -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <!-- New: Basic validation styles -->
-    <style>
-        .validation-error {
-            color: #dc3545;
-            font-size: 0.875em;
-            height: 20px;
-            display: block;
-        }
-        .event-card {
-            border-left: 4px solid #0d6efd;
-            margin-bottom: 10px;
-            padding: 10px;
-            background: #f8f9fa;
-        }
-        .file-hint {
-            font-size: 0.8rem;
-            color: #6c757d;
-        }
-        .calendar-header {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-        }
-        
-        .selected-day {
-            background-color: #0d6efd !important;
-            color: white !important;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .today {
-            background-color: #e9ecef;
-            border-radius: 50%;
-        }
-
-        .day-number {
-            cursor: pointer;
-            width: 24px;
-            height: 24px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin: 2px;
-        }
-    </style>
-
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="row">
-            <div class="col-md-12">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show mb-3">
-                        {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-    {% endwith %}
-
+<div class="container mt-5 justify-content-center">
     <div class="row">
-        <!-- Left Section: Event Creation Form (modified but keeping original classes) -->
+        <!-- Left Section: Event Creation Form -->
         <div class="col-lg-4">
             <div class="card shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
+                    <h5 class="mb-0 text-start">
                         <i class="bi bi-plus-circle me-2">Create New Event</i>
                     </h5>
                 </div>
-                
-                    <!-- New Event Form (added) -->
                 <div class="card-body">
                     <form method="POST" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
@@ -129,9 +51,7 @@
                             {{ form.description(class="form-control", rows=3) }}
                         </div>
 
-                    
-
-                        <!-- privacy_level Settings -->
+                        <!-- Privacy Level Settings -->
                         <div class="mb-4">
                             {{ form.privacy_level.label(class="form-label") }}
                             {{ form.privacy_level(class="form-select") }}
@@ -145,14 +65,12 @@
             </div>
         </div>
 
-        <!-- Right Column: Calendar & Events -->
+        <!-- Right Section: Calendar & Events -->
         <div class="col-lg-8">
             <div class="card shadow-sm">
                 <div class="card-header bg-white">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="bi bi-calendar3 me-2"></i>My Calendar
-                        </h5>
+                        <h5 class="mb-0 text-start">My Calendar</h5>
                         <div>
                             <span id="month-year" class="fw-bold"></span>
                             <button id="prev" class="btn btn-sm btn-outline-secondary ms-2">
@@ -178,16 +96,16 @@
                         </div>
                         <div class="days row g-0" id="days"></div>
                     </div>
-
+                    
                     <!-- Today's Events -->
-                    <div class="mt-4">
-                        <h5 class="d-flex align-items-center">
+                    <div id="schedule-section">
+                        <h5 class="d-flex align-items-center mb-3">
                             <i class="bi bi-list-task me-2"></i>{{ display_date.strftime('%A, %B %d') }} Schedule
                         </h5>
                         <div id="today-events">
                             {% if events %}
                                 {% for event in events %}
-                                    <div class="event-card">
+                                    <div class="event-card mb-3 p-2 border rounded">
                                         <div class="d-flex justify-content-between">
                                             <strong>{{ event.title }}</strong>
                                             <small class="text-muted">
@@ -212,41 +130,10 @@
     </div>
 </div>
 
-<script src="{{ url_for('static', filename='calendarscript.js') }}"></script>
+<!-- Rendering the calendar to show event durations with heatmap -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        
-        const now = new Date();
-        const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-        
-        document.getElementById('start_time').value = formatDateTimeLocal(now);
-        document.getElementById('end_time').value = formatDateTimeLocal(oneHourLater);
+    const eventDurations = JSON.parse('{{event_durations|tojson|safe}}');
+    rendercalendar(eventDurations);
+</script>
 
-        
-        function validateTimes() {
-            const start = new Date(document.getElementById('start_time').value);
-            const end = new Date(document.getElementById('end_time').value);
-            const isValid = end > start;
-            
-            if (!isValid) {
-                alert('End time must be after start time');
-            }
-            return isValid;
-        }
-
-        
-        function formatDateTimeLocal(date) {
-            const pad = num => num.toString().padStart(2, '0');
-            return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-        }
-
-        
-        document.querySelector('form').addEventListener('submit', function(e) {
-            if (!validateTimes()) {
-                e.preventDefault();
-            }
-        });
-    
-    });
-    </script>
 {% endblock %}

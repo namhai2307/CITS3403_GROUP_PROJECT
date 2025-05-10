@@ -51,10 +51,12 @@ Use our analytical tools to track when you are most busy across the week to plan
 4. **Setting up your own secret key to run the web app in your local environment**
   
    ***Note**: Make sure to replace the "your-production-secret-key" to your own secret key message.
+   
    **For MacOS/Linux:**
    ```bash
    export SECRET_KEY='your-production-secret-key'
     ```
+   
    **For Windows:**
    ```bash
    $env:SECRET_KEY = "your-production-secret-key"

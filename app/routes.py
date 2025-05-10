@@ -1,4 +1,4 @@
-from flask import Blueprint, abort, redirect, render_template, url_for, session, flash, request, jsonify
+from flask import Blueprint, redirect, render_template, url_for, session, flash, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from . import  db
 
@@ -122,11 +122,8 @@ def dashboard():
                 start_time=form.start_time.data,
                 end_time=form.end_time.data,
                 description=form.description.data,
-                
-                privacy_level=form.privacy_level.data,  
-                user_id= current_user.id,
-                created_by=current_user.id  # New: Set Creator
-
+                privacy_level=form.privacy_level.data,
+                user_id=current_user.id
             )
             db.session.add(event)
             db.session.commit()
@@ -174,79 +171,9 @@ def dashboard():
         form=form,
         events=daily_events,
         display_date=display_date,
-      
-        event_durations=event_durations,  # Pass durations instead of counts
-        timedelta=timedelta  ,
-        current_user_id= current_user.id  #New: Transfer the current user ID to the template
-
+        event_durations=event_durations,
+        timedelta=timedelta
     )
-
-@main.route('/api/events/<date>', methods=['GET'])
-@login_required
-def get_events_by_date(date):
-    """Retrieve the event list for the specified date"""
-    try:
-        date_obj = datetime.strptime(date, '%Y-%m-%d')
-        start_of_day = datetime.combine(date_obj, datetime.min.time())
-        end_of_day = datetime.combine(date_obj, datetime.max.time())
-        
-        events = Event.query.filter(
-            Event.start_time >= start_of_day,
-            Event.start_time <= end_of_day,
-            
-            Event.user_id == current_user.id  # Only return events for the current user
-        ).order_by(Event.start_time).all()
-        
-        return jsonify([{
-            'id': e.id,
-            'title': e.title,
-            'start_time': e.start_time.isoformat(),
-            'end_time': e.end_time.isoformat(),
-            'description': e.description,
-            'created_by': e.created_by
-        } for e in events])
-    
-    except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
-
-@main.route('/api/events/<int:event_id>', methods=['PUT'])
-@login_required
-def update_event(event_id):
-    event = Event.query.get_or_404(event_id)
-    if event.created_by != current_user.id:  
-        abort(403)
-    
-    data = request.get_json()  
-    print("Received data:", data)  
-    
-    
-    if 'title' in data:
-        event.title = data['title']
-    if 'description' in data:
-        event.description = data.get('description')
-    if 'start_time' in data:
-        event.start_time = datetime.fromisoformat(data['start_time'])
-    if 'end_time' in data:
-        event.end_time = datetime.fromisoformat(data['end_time'])
-    if 'privacy_level' in data:
-        event.privacy_level = data['privacy_level']
-    
-    db.session.commit()  
-    return jsonify({'status': 'success'})
-
-@main.route('/api/events/<int:event_id>', methods=['DELETE'])
-@login_required
-def delete_event(event_id):
-    event = Event.query.get_or_404(event_id)
-    if event.created_by != current_user.id:
-        abort(403)
-        
-    db.session.delete(event)
-    db.session.commit()  
-    return jsonify({'status': 'deleted'})
-
-
-
 
 @main.route('/help')
 def help():

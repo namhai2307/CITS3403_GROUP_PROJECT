@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function(){
             new Date().toISOString().split('T')[0];
     }
 
-    // ====================== Event Management Section ======================
+
     function renderEventList(events) {
         const container = document.getElementById('today-events');
         

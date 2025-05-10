@@ -99,6 +99,8 @@ class EventForm(FlaskForm):
         render_kw={"type": "datetime-local"}
     )
     
+    
+    
     privacy_level = SelectField(
         'Sharing',
         choices=[

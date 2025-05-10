@@ -40,6 +40,7 @@ class Event(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     
     privacy_level = db.Column(db.String(20), default='private')  # private/friends/specific_users
+    shared_with = db.Column(db.String(255), nullable=True) #friends ID
     
     # Associated users
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -47,4 +48,17 @@ class Event(db.Model):
 
     def __repr__(self):
         return f'<Event {self.title} ({self.start_time} to {self.end_time})>'
+    
+#Add friend functionality start here  
+class Friendship(db.Model):
+    __tablename__ = 'friendships'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', foreign_keys=[user_id], backref='friends')
+    friend = db.relationship('User', foreign_keys=[friend_id])
+
+    def __repr__(self):
+        return f'<Friendship {self.user_id} -> {self.friend_id}>'
     

@@ -3,7 +3,7 @@ from flask_login import login_user, logout_user, current_user, login_required
 from . import  db
 
 from .forms import LoginForm, SignUpForm,EventForm  
-from .models import User,Event  # Import User Model
+from .models import User,Event, Friendship  # Import User Model
 
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta
@@ -178,6 +178,26 @@ def dashboard():
 @main.route('/help')
 def help():
     return render_template('help.html')
+
+#Add friend section
+@main.route('/add_friend', methods=['POST'])
+@login_required
+def add_friend():
+    friend_id = request.form.get('friend_id')
+    if friend_id:
+        # Check if the friendship already exists
+        existing_friendship = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend_id).first()
+        if not existing_friendship:
+            # Add the friendship
+            friendship = Friendship(user_id=current_user.id, friend_id=friend_id)
+            db.session.add(friendship)
+            db.session.commit()
+            flash('Friend added successfully!', 'success')
+        else:
+            flash('You are already friends with this user.', 'info')
+    else:
+        flash('Invalid friend ID.', 'error')
+    return redirect(url_for('main.profile'))
 
 # For shared visualisation between friends 
 @main.route('/visualisation')

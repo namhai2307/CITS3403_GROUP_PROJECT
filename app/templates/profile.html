@@ -2,7 +2,6 @@
 
 {% block head %}
     <title>Who is Free? - Profile </title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='profilestyle.css') }}">
 {% endblock %}
 
 {% block content %}
@@ -12,10 +11,11 @@
         <div id="profile" class="content-section">
             <h2 class="text-center">Find and Add Friends</h2>
             <p class="text-center">Search for friends and add them to your network!</p>
-            
+    
             <!-- Friend Search Form -->
             <div class="form-box" id="find-friend">
                 <form action="{{ url_for('main.profile') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <h3 class="text-center mb-4">Find Your Friends</h3>
                     <input type="text" id="search-input" name="search_query" class="input" placeholder="Enter your friend's username" required>
                     <button type="submit" class="btn btn-primary w-100">Search</button>

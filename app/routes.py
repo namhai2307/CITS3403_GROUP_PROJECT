@@ -89,6 +89,7 @@ def signup():
 
 
 @main.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     """
     Render the user profile page.

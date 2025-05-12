@@ -38,11 +38,9 @@ class SeleniumTests(unittest.TestCase):
         db.create_all()
         self.add_test_data_to_db()
 
-        # Start the Flask server in a separate process
         self.server_process = multiprocessing.Process(target=run_flask_app)
         self.server_process.start()
 
-        # Set up the Selenium WebDriver
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")  # Run in headless mode
         self.driver = webdriver.Chrome(options=options)
@@ -72,14 +70,16 @@ class SeleniumTests(unittest.TestCase):
         user = User(username="newuser", email="newuser@example.com")
         user.set_password("Password1234")
         db.session.add(user)
+        db.session.commit()
 
         event = Event(
             title="Test Event",
             description="This is a test event.",
             start_time=datetime(2025, 5, 8, 10, 0, 0),
             end_time=datetime(2025, 5, 8, 12, 0, 0),
-            privacy_level="public",
-            user_id=1  
+            privacy_level="private",
+            user_id=user.id,
+            created_by=user.id
         )
         db.session.add(event)
         db.session.commit()
@@ -109,6 +109,7 @@ class SeleniumTests(unittest.TestCase):
 
         self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
+        self.assertEqual(self.driver.current_url, localHost + "login")
         self.assertIn("email", self.driver.page_source)
         self.assertIn("password", self.driver.page_source)
 
@@ -132,16 +133,16 @@ class SeleniumTests(unittest.TestCase):
 
     def test_create_event(self):
         """
-        Verify the event creation functionality
-        Test proceeds to login and create an predefined event.
+        Verify the event creation functionality.
+        Test proceeds to login and create a predefined event.
         If successful, the test will check that event is displayed on the dashboard.
         """
-
         self.driver.get(localHost + "login")
         self.driver.find_element(By.NAME, "email").send_keys("newuser@example.com")
         self.driver.find_element(By.NAME, "password").send_keys("Password1234")
         self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
+        # Fill out the event creation form
         self.driver.find_element(By.ID, "title").send_keys("Selenium Test Event")
         self.driver.find_element(By.ID, "description").send_keys("This is a Selenium Test Event.")
         start_time_field = self.driver.find_element(By.ID, "start_time")
@@ -152,13 +153,15 @@ class SeleniumTests(unittest.TestCase):
 
         self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
-        current_url = self.driver.current_url
+        # Wait for the event to appear on the dashboard
+        WebDriverWait(self.driver, 10).until(
+            EC.text_to_be_present_in_element((By.ID, "today-events"), "Selenium Test Event")
+        )
+
         page_text = self.driver.page_source
-    
-        self.assertTrue(self.driver.current_url.endswith("/dashboard"))
+
         self.assertIn("This is a Selenium Test Event.", page_text)
         self.assertIn("10:00 - 12:00", page_text)
-      
 
     def test_logout_user(self):
         """

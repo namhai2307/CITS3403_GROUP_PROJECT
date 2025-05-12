@@ -69,20 +69,18 @@ class Event(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  
     
-
     user = db.relationship('User', foreign_keys=[user_id], backref='events')
     creator = db.relationship('User', foreign_keys=[created_by], backref='created_events')
 
     def __repr__(self):
         return f'<Event {self.title} ({self.start_time} to {self.end_time})>'
     
-#Add friend functionality start here  
 class Friendship(db.Model):
     __tablename__ = 'friendships'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     friend_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    status = db.Column(db.String(20), default='pending')  # 'pending' or 'accepted'
+    status = db.Column(db.String(20), default='pending') 
 
     user = db.relationship('User', foreign_keys=[user_id], backref='friends')
     friend = db.relationship('User', foreign_keys=[friend_id])

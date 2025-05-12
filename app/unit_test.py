@@ -9,7 +9,7 @@ SQLite database for testing.
 import unittest
 from app import create_app, db
 from app.models import User, Event
-from app.config import TestConfig
+from app.config import UnitTestConfig
 from datetime import datetime, timedelta, timezone
 
 class PageRedirectionTests(unittest.TestCase):
@@ -20,11 +20,11 @@ class PageRedirectionTests(unittest.TestCase):
         """
         Set up the test environment.
 
-        Creates a test application using the TestConfig configuration,
+        Creates a test application using the UnitTestConfig configuration,
         initializes the application context, and sets up the in-memory
         SQLite database.
         """
-        testApp = create_app(TestConfig)  
+        testApp = create_app(UnitTestConfig)  
         self.app_context = testApp.app_context() 
         self.app_context.push() 
         db.create_all()  
@@ -48,7 +48,7 @@ class PageRedirectionTests(unittest.TestCase):
         response status code is 200 and the response contains the text
         "Who is free?".
         """
-        client = create_app(TestConfig).test_client()
+        client = create_app(UnitTestConfig).test_client()
         response = client.get('/')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Who is free?", response.data)
@@ -61,7 +61,7 @@ class PageRedirectionTests(unittest.TestCase):
         response status code is 200 and the response contains the text
         "Login".
         """
-        client = create_app(TestConfig).test_client()
+        client = create_app(UnitTestConfig).test_client()
         response = client.get('/login')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Login", response.data)
@@ -79,7 +79,7 @@ class DatabaseTests(unittest.TestCase):
         initializes the application context, and sets up the in-memory
         SQLite database.
         """
-        testApp = create_app(TestConfig)
+        testApp = create_app(UnitTestConfig)
         self.app_context = testApp.app_context()
         self.app_context.push()
         db.create_all()
@@ -128,7 +128,8 @@ class DatabaseTests(unittest.TestCase):
             start_time=datetime.now(timezone.utc),
             end_time=datetime.now(timezone.utc) + timedelta(hours=2),
             privacy_level="private",
-            user_id=user.id
+            user_id=user.id,
+            created_by=user.id
         )
         db.session.add(event)
         db.session.commit()
@@ -150,7 +151,8 @@ class DatabaseTests(unittest.TestCase):
             start_time=datetime(2025, 5, 6, 10, 0, tzinfo=timezone.utc),
             end_time=datetime(2025, 5, 6, 12, 0, tzinfo=timezone.utc),
             privacy_level="private",
-            user_id=1
+            user_id=1,
+            created_by=1
         )
         self.assertEqual(
             repr(event),

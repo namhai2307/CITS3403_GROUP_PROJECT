@@ -4,6 +4,11 @@ function showForm(formID) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    // If there is an editing form for the dashboard, please return it directly on the dashboard page
+    if (document.getElementById('editEventForm')) {
+        return;
+    }
+
     const monthYear = document.getElementById("month-year");
     const daysContainer = document.getElementById("days");
     const prevButton = document.getElementById('prev');
@@ -83,6 +88,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Fetch and display events for a specific day
     function fetchEventsForDay(dateStr) {
+        
+        if (document.getElementById('editEventForm')) {
+            return;
+        }
+
         // Update the URL with the selected date
         const url = new URL(window.location);
         url.searchParams.set('date', dateStr);
@@ -91,7 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update the schedule header on the frontend
         const scheduleHeader = document.querySelector('#schedule-section h5');
         const newDate = new Date(dateStr);
-        // Format the date as "Weekday, Month day" (using en-US locale here)
         const options = { weekday: 'long', month: 'long', day: 'numeric' };
         const formattedDate = newDate.toLocaleDateString('en-US', options);
         scheduleHeader.innerHTML = `<i class="bi bi-list-task me-2"></i>${formattedDate} Schedule`;
@@ -118,7 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         todayEventsContainer.appendChild(eventDiv);
                     });
                 } else {
-                    // Clear container if no events found
                     todayEventsContainer.innerHTML = '';
                 }
             })

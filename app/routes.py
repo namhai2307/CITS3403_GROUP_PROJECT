@@ -290,8 +290,6 @@ def delete_event(event_id):
     db.session.commit()
     return jsonify({'status': 'deleted'})
 
-
-
 @main.route('/help')
 def help():
     """
@@ -316,17 +314,18 @@ def visualisation():
 @login_required
 def friend_calendar(friend_id):
     """
-    API endpoint to retrieve a friend's calendar events for the current month.
-
-    Returns a JSON response with event durations grouped by day.
+    API endpoint to retrieve a friend's calendar events for the current month,
+    and optionally for a specific day.
     """
     friend = User.query.get_or_404(friend_id)
 
+    # 热力图数据
     start_of_month = datetime.now().replace(day=1)
     end_of_month = (start_of_month + timedelta(days=31)).replace(day=1) - timedelta(seconds=1)
 
     events = Event.query.filter(
         Event.user_id == friend.id,
+        Event.privacy_level == 'friends',
         Event.start_time >= start_of_month,
         Event.start_time <= end_of_month
     ).all()
@@ -337,7 +336,33 @@ def friend_calendar(friend_id):
         duration = (event.end_time - event.start_time).total_seconds() / 3600
         event_durations[day] = event_durations.get(day, 0) + duration
 
-    return jsonify({'eventDurations': event_durations})
+    # 如果有 date 参数，返回当天事件
+    date_str = request.args.get('date')
+    events_data = []
+    if date_str:
+        try:
+            selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            start_of_day = datetime.combine(selected_date, datetime.min.time())
+            end_of_day = datetime.combine(selected_date, datetime.max.time())
+            day_events = Event.query.filter(
+                Event.user_id == friend.id,
+                Event.privacy_level == 'friends',
+                Event.start_time >= start_of_day,
+                Event.start_time <= end_of_day
+            ).order_by(Event.start_time).all()
+            events_data = [
+                {
+                    'title': event.title,
+                    'start_time': event.start_time.strftime('%H:%M'),
+                    'end_time': event.end_time.strftime('%H:%M'),
+                    'description': event.description
+                }
+                for event in day_events
+            ]
+        except Exception:
+            pass
+
+    return jsonify({'eventDurations': event_durations, 'events': events_data})
 
 @main.route('/api/events')
 @login_required

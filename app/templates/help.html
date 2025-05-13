@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 
 {% block head %}
-    <title>Who is Free? - Help Page</title>
+    <title>Who is Free? - Help</title>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
             <li> <a href="#makeAcount">Making Your Account</a> </li>
             <li> <a href="#changeDetails">Changing Your Details</a> </li>
             <li> <a href="#addEvent">Adding an Event</a> </li>
-            <li> <a href=#editEvent">Editing an Event</a> </li>
+            <li> <a href="#editEvent">Editing an Event</a> </li>
             <li> <a href="#colourVis">Why is my Calendar Red?</a> </li>
             <li> <a href="#addFriend">Adding a Contact</a> </li>
             <li> <a href="#createGroup">Creating a Sharegroup</a> </li>
@@ -39,24 +39,23 @@
     </section>
     <section id="changeDetails">
       <h2>Changing Your Details</h2>
-      <p>This functions is not yet implemented.</p>
+      <p>This function is not yet implemented.</p>
     </section>
     <section id="addEvent">
       <h2>Adding An Event</h2>
-      <p>You can add new events to your calendar using the <a href='main/dashboard.html'>Dashboard</a> tab in two ways. <br>
-          Firstly, by using the "Add Event" form on the left-hand side of the page. Simply fill in the details for your event, then submit to see it added to your calendar on the right.
+      <p>You can add new events to your calendar using the <a href='/dashboard'>Dashboard</a> tab. <br>
+          Using the "Add Event" form on the left-hand side of the page. Simply fill in the details for your event, then submit to see it added to your calendar on the right.
           <ul style="list-style-type: none;">
-              <li> Start and End Time: The time period during which the event will occur. End time does not have to be on the same day as the start.</li>
+              <li> Start and End Time: The time period during which the event will occur. End time currently must be on the same day as the start.</li>
               <li> Title: The header for your event that will display beneath the calendar when viewing the day.</li>
               <li> Description: A short description that will be displayed beneath the Title when viewing the day.</li>
               <li> Privacy Level: Decide who can view details of this event: Just yourself, specific friends, or all friends. </li>
           </ul>
-          Secondly, you can click on a day on the calendar display directly. This will start autofilling the "Add Event" form with an event on the clicked day with a default duration of one hour. Simply add in the remaining details and submit your event.
       </p>
     </section>
     <section id="editEvent">
       <h2>Editing an Event</h2>
-      <p>Lorum ipsum.</p>
+      <p>This feature is currently bugged.</p>
     </section>
     <section id="colourVis">
       <h2>Why is my Calendar Red?</h2>
@@ -66,9 +65,9 @@
     </section>
     <section id="addFriend">
       <h2>Adding A Contact</h2>
-      <p> Send a friend request to your contacts by searching their username on the <a href='main/profile.html'>Profile</a> tab! The users that best match your search term will be displayed beneath the box, so try to be as close to their username as you can. 
+      <p> Send a friend request to your contacts by searching their username on the <a href='/profile'>Profile</a> tab! The users that best match your search term will be displayed beneath the box, so try to be as close to their username as you can. 
           Then it's simply a matter of clicking the "Add Friend" button to ship off the request for them to review. <br>
-        If another user has sent you a friend request, these will appear just beneath the search box when you enter your profile. Simply click "Accept" if you want to link your account to the other user, or "Deny" if you do not.
+        If another user has sent you a friend request, these will appear just beneath the search box when you enter your profile. Simply click "Accept" if you want to link your account to the other user, or "Delete" if you do not.
       </p>
     </section>
     <section id="createGroup">

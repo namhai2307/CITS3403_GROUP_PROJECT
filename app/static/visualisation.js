@@ -84,11 +84,32 @@ document.addEventListener('DOMContentLoaded', function () {
       if (duration === 0) {
         dayDiv.style.backgroundColor = 'white';
       } else if (duration <= 2) {
-        dayDiv.style.backgroundColor = '#ffcccc';
-      } else if (duration <= 5) {
-        dayDiv.style.backgroundColor = '#ff6666';
+        dayDiv.style.backgroundColor = '#00ff00';
+      } else if (duration <= 4) {
+        dayDiv.style.backgroundColor = '#61f100';
+      } else if (duration <= 6) {
+        dayDiv.style.backgroundColor = '#89e200';
+      } else if (duration <= 8) {
+        dayDiv.style.backgroundColor = '#a3d200';
+      } else if (duration <= 10) {
+        dayDiv.style.backgroundColor = '#b6c300';
+      } else if (duration <= 12) {
+        dayDiv.style.backgroundColor = '#c7b200';
+      } else if (duration <= 14) {
+        dayDiv.style.backgroundColor = '#d5a100';
+      } else if (duration <= 16) {
+        dayDiv.style.backgroundColor = '#e28d00';
+      } else if (duration <= 18) {
+        dayDiv.style.backgroundColor = '#ee7700';
+      } else if (duration <= 20) {
+        dayDiv.style.backgroundColor = '#f75e00';
+      } else if (duration <= 22) {
+        dayDiv.style.backgroundColor = '#fd3f00';
+      } else if (duration <= 24) {
+        dayDiv.style.backgroundColor = '#ff0000';
       } else {
-        dayDiv.style.backgroundColor = '#cc0000';
+        dayDiv.style.backgroundColor = '#000000';
+
         dayDiv.style.color = 'white';
       }
 

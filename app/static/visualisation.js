@@ -109,6 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
         dayDiv.style.backgroundColor = '#ff0000';
       } else {
         dayDiv.style.backgroundColor = '#000000';
+
         dayDiv.style.color = 'white';
       }
 

@@ -107,7 +107,7 @@ def profile():
             users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
             return render_template(
                 'profile.html',
-                users=users,
+                users=users[:4],
                 search_query=search_query,
                 friends=friends,
                 pending_requests=pending_requests,

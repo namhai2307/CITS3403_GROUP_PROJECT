@@ -8,10 +8,12 @@ event management, and API endpoints. It uses Flask blueprints to organize the ro
 from flask import Blueprint, abort, redirect, render_template, url_for, session, flash, request, jsonify
 from flask_login import login_user, logout_user, current_user, login_required
 from . import  db
-from .forms import LoginForm, SignUpForm, EventForm 
-from .models import User,Event, Friendship
+from .forms import LoginForm, SignUpForm, EventForm
+from .models import User,Event, Friendship, Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from datetime import datetime, timedelta
+from flask_socketio import emit, join_room, leave_room
+from . import socketio
 
 main = Blueprint('main', __name__)
 
@@ -446,3 +448,135 @@ def delete_friend_request(friendship_id):
     else:
         flash('Invalid request.', 'error')
     return redirect(url_for('main.profile'))
+
+@main.route('/chat')
+@login_required
+def chat():
+    """
+    Render the chat page.
+    """
+    # Get the list of friends
+    friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
+    friends = [User.query.get(f.friend_id) for f in friendships]
+
+    return render_template('chat.html', username=current_user.username, friends=friends)
+
+# SocketIO Events
+@socketio.on('send_message')
+def handle_send_message(data):
+    """
+    Handle incoming messages, store them in the database, and broadcast them to the room.
+    """
+    room = data['room']
+    message_content = data['message']
+    username = data['username']
+
+    # Get the sender
+    sender = User.query.filter_by(username=username).first()
+    if not sender:
+        return  # Invalid sender
+
+    # Get the recipient ID from the room name (e.g., "room_<recipient_id>")
+    recipient_id = int(room.split('_')[1])
+
+    # Store the message in the database
+    message = Message(
+        sender_id=sender.id,
+        recipient_id=recipient_id,
+        content=message_content
+    )
+    db.session.add(message)
+    db.session.commit()
+
+    # Broadcast the message to the room
+    emit('receive_message', {'username': username, 'message': message_content}, room=room)
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    """
+    Handle a user joining a chat room and send chat history.
+    """
+    room = data['room']
+    username = data['username']
+    join_room(room)
+
+    # Retrieve chat history for the room
+    messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
+    chat_history = [{'username': msg.sender.username, 'message': msg.content, 'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')} for msg in messages]
+
+    # Send chat history to the user
+    emit('chat_history', chat_history, to=request.sid)
+
+    # Notify others in the room
+    emit('user_joined', {'username': username}, room=room)
+
+@socketio.on('leave_room')
+def handle_leave_room(data):
+    """
+    Handle a user leaving a chat room.
+    """
+    room = data['room']
+    username = data['username']
+    leave_room(room)
+    emit('user_left', {'username': username}, room=room)
+
+from flask import request, jsonify
+from .models import Message, User
+from . import db
+
+@main.route('/messages/send', methods=['POST'])
+@login_required
+def send_message():
+    """
+    Send a message to a friend.
+    """
+    data = request.json
+    recipient_id = data.get('recipient_id')
+    content = data.get('content')
+
+    if not recipient_id or not content:
+        return jsonify({'error': 'Recipient and content are required'}), 400
+
+    # Ensure the recipient is a friend
+    recipient = User.query.get(recipient_id)
+    if not recipient:
+        return jsonify({'error': 'Recipient not found'}), 404
+
+    # Create and store the message
+    message = Message(sender_id=current_user.id, recipient_id=recipient_id, content=content)
+    db.session.add(message)
+    db.session.commit()
+
+    return jsonify({'success': 'Message sent'}), 200
+
+@main.route('/messages/<int:friend_id>', methods=['GET'])
+@login_required
+def get_messages(friend_id):
+    """
+    Fetch messages between the current user and a friend.
+    """
+    # Ensure the friend is valid
+    friend = User.query.get(friend_id)
+    if not friend:
+        return jsonify({'error': 'Friend not found'}), 404
+
+    # Fetch messages between the current user and the friend
+    messages = Message.query.filter(
+        ((Message.sender_id == current_user.id) & (Message.recipient_id == friend_id)) |
+        ((Message.sender_id == friend_id) & (Message.recipient_id == current_user.id))
+    ).order_by(Message.timestamp).all()
+
+    # Format the messages for the response
+    messages_data = [
+        {
+            'id': message.id,
+            'sender_id': message.sender_id,
+            'recipient_id': message.recipient_id,
+            'content': message.content,
+            'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+            'read': message.read
+        }
+        for message in messages
+    ]
+
+    return jsonify(messages_data), 200

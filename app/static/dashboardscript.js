@@ -55,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function(){
             // Heatmap: Coloring based on eventDurations
             const dateStr = dayDiv.dataset.date;
             const duration = (typeof eventDurations !== 'undefined' && eventDurations[dateStr]) ? eventDurations[dateStr] : 0;
-            dayDiv.textContent = duration;
             if (duration === 0) {
                 dayDiv.style.backgroundColor = 'white';
             } else if (duration <= 2) {

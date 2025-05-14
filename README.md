@@ -78,4 +78,6 @@ Use our analytical tools to track when you are most busy across the week to plan
    python -m unittest app.selenium_test
    ```
 
+*Disclaimer: This project consists the use of AI, specifically Github Copilot as part of our references.
+
 

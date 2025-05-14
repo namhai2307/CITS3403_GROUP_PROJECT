@@ -41,7 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
         renderEventList(data.events || []);
         const displayDate = new Date(dateStr);
         const options = { weekday: 'long', month: 'long', day: 'numeric' };
-        document.getElementById('friend-display-date').textContent = displayDate.toLocaleDateString('en-US', options);
+        const formattedDate = displayDate.toLocaleDateString('en-US', options);
+        document.getElementById('friend-schedule-header').innerHTML =
+          `<i class="bi bi-list-task me-2"></i>${formattedDate} Schedule`;
       })
       .catch(err => {
         renderEventList([]);
@@ -60,46 +62,55 @@ document.addEventListener('DOMContentLoaded', function () {
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     monthYear.textContent = `${months[month]} ${year}`;
 
-    const totalCells = firstDay + lastDay;
-    const rows = Math.ceil(totalCells / 7);
+    // Previous month's dates
+    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    for (let i = firstDay; i > 0; i--) {
+      const dayDiv = document.createElement('div');
+      dayDiv.textContent = prevMonthLastDay - i + 1;
+      dayDiv.classList.add('fade');
+      daysContainer.appendChild(dayDiv);
+    }
 
-    let date = 1;
-    for (let r = 0; r < rows; r++) {
-      const row = document.createElement('div');
-      row.className = 'row g-0';
-      for (let c = 0; c < 7; c++) {
-        const cellIndex = r * 7 + c;
-        const dayCell = document.createElement('div');
-        dayCell.className = 'col p-2 text-center border';
+    // Current month's dates
+    for (let i = 1; i <= lastDay; i++) {
+      const dayDiv = document.createElement('div');
+      dayDiv.textContent = i;
+      dayDiv.classList.add('day-cell');
+      dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
 
-        if (cellIndex >= firstDay && date <= lastDay) {
-          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
-          const duration = eventDurations[dateStr] || 0;
-
-          dayCell.textContent = date;
-          if (duration === 0) {
-            dayCell.style.backgroundColor = 'white';
-          } else if (duration <= 2) {
-            dayCell.style.backgroundColor = '#ffcccc';
-          } else if (duration <= 5) {
-            dayCell.style.backgroundColor = '#ff6666';
-          } else {
-            dayCell.style.backgroundColor = '#cc0000';
-            dayCell.style.color = 'white';
-          }
-
-          dayCell.style.cursor = 'pointer';
-          dayCell.addEventListener('click', function () {
-            const friendId = friendSelector.value;
-            if (friendId) fetchFriendDayEvents(friendId, dateStr);
-          });
-
-          date++;
-        }
-
-        row.appendChild(dayCell);
+      // Heatmap coloring
+      const dateStr = dayDiv.dataset.date;
+      const duration = eventDurations[dateStr] || 0;
+      if (duration === 0) {
+        dayDiv.style.backgroundColor = 'white';
+      } else if (duration <= 2) {
+        dayDiv.style.backgroundColor = '#ffcccc';
+      } else if (duration <= 5) {
+        dayDiv.style.backgroundColor = '#ff6666';
+      } else {
+        dayDiv.style.backgroundColor = '#cc0000';
+        dayDiv.style.color = 'white';
       }
-      daysContainer.appendChild(row);
+
+      // Highlight today
+      const today = new Date();
+      if (
+        i === today.getDate() &&
+        month === today.getMonth() &&
+        year === today.getFullYear()
+      ) {
+        dayDiv.classList.add('today');
+      }
+
+      // Click event
+      dayDiv.addEventListener('click', function () {
+        document.querySelectorAll('.day-cell').forEach(cell => cell.classList.remove('today'));
+        dayDiv.classList.add('today');
+        const friendId = friendSelector.value;
+        if (friendId) fetchFriendDayEvents(friendId, dayDiv.dataset.date);
+      });
+
+      daysContainer.appendChild(dayDiv);
     }
   }
 

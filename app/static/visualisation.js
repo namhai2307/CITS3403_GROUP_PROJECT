@@ -80,9 +80,29 @@ document.addEventListener('DOMContentLoaded', function () {
           if (duration === 0) {
             dayCell.style.backgroundColor = 'white';
           } else if (duration <= 2) {
-            dayCell.style.backgroundColor = '#ffcccc';
-          } else if (duration <= 5) {
-            dayCell.style.backgroundColor = '#ff6666';
+            dayCell.style.backgroundColor = '#00ff00';
+          } else if (duration <= 4) {
+            dayCell.style.backgroundColor = '#61f100';
+          } else if (duration <= 6) {
+            dayCell.style.backgroundColor = '#89e200';
+          } else if (duration <= 8) {
+            dayCell.style.backgroundColor = '#a3d200';
+          } else if (duration <= 10) {
+            dayCell.style.backgroundColor = '#b6c300';
+          } else if (duration <= 12) {
+            dayCell.style.backgroundColor = '#c7b200';
+          } else if (duration <= 14) {
+            dayCell.style.backgroundColor = '#d5a100';
+          } else if (duration <= 16) {
+            dayCell.style.backgroundColor = '#e28d00';
+          } else if (duration <= 18) {
+            dayCell.style.backgroundColor = '#ee7700';
+          } else if (duration <= 20) {
+            dayCell.style.backgroundColor = '#f75e00';
+          } else if (duration <= 22) {
+            dayCell.style.backgroundColor = '#fd3f00';
+          } else if (duration <= 24) {
+            dayCell.style.backgroundColor = '#ff0000';
           } else {
             dayCell.style.backgroundColor = '#cc0000';
             dayCell.style.color = 'white';

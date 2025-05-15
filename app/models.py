@@ -8,6 +8,7 @@ management and user loading.
 
 from flask_login import UserMixin
 from app import db, login_manager
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin, db.Model):
@@ -87,3 +88,15 @@ class Friendship(db.Model):
 
     def __repr__(self):
         return f'<Friendship {self.user_id} -> {self.friend_id} ({self.status})>'
+
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.now)
+    read = db.Column(db.Boolean, default=False)
+    room = db.Column(db.String(100), nullable=True)  
+
+    sender = db.relationship('User', foreign_keys=[sender_id], backref='sent_messages')
+    recipient = db.relationship('User', foreign_keys=[recipient_id], backref='received_messages')

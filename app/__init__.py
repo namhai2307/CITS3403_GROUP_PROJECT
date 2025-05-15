@@ -13,12 +13,14 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from .config import DevelopmentConfig
 from flask_wtf import CSRFProtect
+from flask_socketio import SocketIO
 
 db = SQLAlchemy()
 migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = 'main.login'  
 csrf = CSRFProtect()
+socketio =SocketIO()
 
 def create_app(config_class=None):
     """
@@ -44,8 +46,8 @@ def create_app(config_class=None):
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
-
     csrf.init_app(app)
+    socketio.init_app(app)
     
     login_manager.login_view = 'main.login'
     login_manager.login_message_category = 'info'

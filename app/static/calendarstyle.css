@@ -57,7 +57,8 @@
     height: 240px;
 }
 
-.days div:hover, .days div:focus {
+.days div:hover, .days div:focus,
+.col.p-2.text-center.border:hover, .col.p-2.text-center.border:focus {
     background-color: red;
     color: rgb(212, 18, 18);
 }

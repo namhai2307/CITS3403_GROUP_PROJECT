@@ -24,14 +24,14 @@
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 {{ form.start_time.label(class="form-label") }}
-                                {{ form.start_time(class="form-control") }}
+                                {{ form.start_time(class="form-control", id="start_time") }}
                                 {% for error in form.start_time.errors %}
                                     <div class="validation-error">{{ error }}</div>
                                 {% endfor %}
                             </div>
                             <div class="col-md-6">
                                 {{ form.end_time.label(class="form-label") }}
-                                {{ form.end_time(class="form-control") }}
+                                {{ form.end_time(class="form-control", id="end_time") }}
                                 {% for error in form.end_time.errors %}
                                     <div class="validation-error">{{ error }}</div>
                                 {% endfor %}
@@ -41,7 +41,7 @@
                         <!-- Event Details -->
                         <div class="mb-3">
                             {{ form.title.label(class="form-label") }}
-                            {{ form.title(class="form-control") }}
+                            {{ form.title(class="form-control", id="title") }}
                             {% for error in form.title.errors %}
                                 <div class="validation-error">{{ error }}</div>
                             {% endfor %}
@@ -49,13 +49,13 @@
                         
                         <div class="mb-3">
                             {{ form.description.label(class="form-label") }}
-                            {{ form.description(class="form-control", rows=3) }}
+                            {{ form.description(class="form-control", id="description", rows=3) }}
                         </div>
 
                         <!-- Privacy Level Settings -->
                         <div class="mb-4">
                             {{ form.privacy_level.label(class="form-label") }}
-                            {{ form.privacy_level(class="form-select") }}
+                            {{ form.privacy_level(class="form-select", id="privacy_level") }}
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">

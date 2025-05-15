@@ -1,30 +1,49 @@
+/**
+ * @fileoverview Real-time chat interface with Socket.IO integration.
+ *
+ * This script powers a user-to-user messaging interface with live updates,
+ * dynamic room switching, and message history retrieval. It uses WebSockets
+ * (via Socket.IO) to send and receive real-time messages and events, and 
+ * interacts with the server via fetch for message history and persistence.
+ *
+ * Features:
+ * - Automatically joins and leaves chat rooms based on selected friend
+ * - Fetches chat history when a new friend is selected
+ * - Sends messages both via WebSocket and HTTP POST for persistence
+ * - Listens for real-time events: `receive_message`, `user_joined`, `user_left`
+ * - Dynamically updates DOM with messages and connection events
+ *
+ * Dependencies:
+ * - Socket.IO (client)
+ * - DOM elements with IDs: 'message-form', 'message-input', 'messages', 'friend-selector'
+ * - Global variables expected: `username`, `currentUserId`
+ *
+*/
+
 document.addEventListener('DOMContentLoaded', () => {
-    const socket = io(); // Connect to the SocketIO server
+    const socket = io(); 
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
     const messagesContainer = document.getElementById('messages');
     const friendSelector = document.getElementById('friend-selector');
 
-    let room = null; // Room will be dynamically set based on the selected friend
+    let room = null; 
     let selectedFriendId = null;
 
-    // Join a chat room
     function joinRoom(newRoom) {
         if (room) {
-            // Leave the current room
             socket.emit('leave_room', { room: room, username: username });
         }
         room = newRoom;
         socket.emit('join_room', { room: room, username: username });
-        messagesContainer.innerHTML = ''; // Clear previous messages
+        messagesContainer.innerHTML = '';
     }
 
-    // Fetch messages between the current user and the selected friend
     function fetchMessages(friendId) {
         fetch(`/messages/${friendId}`)
             .then(response => response.json())
             .then(messages => {
-                messagesContainer.innerHTML = ''; // Clear previous messages
+                messagesContainer.innerHTML = ''; 
                 messages.forEach(msg => {
                     const messageElement = document.createElement('div');
                     const senderName = msg.sender_id === parseInt(currentUserId) ? 'You' : msg.sender_username;
@@ -39,22 +58,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageElement.textContent = `${senderName}: ${msg.content} (${timestamp})`;
                     messagesContainer.appendChild(messageElement);
                 });
-                messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
             })
             .catch(error => console.error('Error fetching messages:', error));
     }
 
-    // Listen for chat history
     socket.on('chat_history', (messages) => {
         messages.forEach((msg) => {
             const messageElement = document.createElement('div');
             messageElement.textContent = `${msg.username}: ${msg.message} (${msg.timestamp})`;
             messagesContainer.appendChild(messageElement);
         });
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
 
-    // Listen for incoming messages
     socket.on('receive_message', (data) => {
         const messageElement = document.createElement('div');
         const senderName = data.sender_id === parseInt(currentUserId) ? 'You' : data.sender_username;
@@ -68,11 +85,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         messageElement.textContent = `${senderName}: ${data.message} (${timestamp})`;
         messagesContainer.appendChild(messageElement);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     });
 
-    // Listen for user join/leave events
-    socket.off('user_joined'); // Remove any existing listener
+    socket.off('user_joined'); 
     socket.on('user_joined', (data) => {
         const messageElement = document.createElement('div');
         messageElement.textContent = `${data.username} joined the chat.`;
@@ -80,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.appendChild(messageElement);
     });
 
-    socket.off('user_left'); // Remove any existing listener
+    socket.off('user_left'); 
     socket.on('user_left', (data) => {
         const messageElement = document.createElement('div');
         messageElement.textContent = `${data.username} left the chat.`;
@@ -88,16 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
         messagesContainer.appendChild(messageElement);
     });
 
-    // Handle friend selection
     friendSelector.addEventListener('change', () => {
         selectedFriendId = friendSelector.value;
         if (selectedFriendId) {
-            joinRoom(`room_${selectedFriendId}`); // Use a unique room name for each friend
+            joinRoom(`room_${selectedFriendId}`); 
             fetchMessages(selectedFriendId);
         }
     });
 
-    // Handle message form submission
     messageForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const message = messageInput.value;
@@ -114,8 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        messageInput.value = ''; // Clear the input field
-                        fetchMessages(selectedFriendId); // Refresh messages
+                        messageInput.value = ''; 
+                        fetchMessages(selectedFriendId); 
                     }
                 })
                 .catch(error => console.error('Error sending message:', error));
@@ -124,7 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Leave the room when the user navigates away
     window.addEventListener('beforeunload', () => {
         if (room) {
             socket.emit('leave_room', { room: room, username: username });

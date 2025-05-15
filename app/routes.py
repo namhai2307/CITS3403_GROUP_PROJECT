@@ -489,7 +489,14 @@ def handle_send_message(data):
     db.session.commit()
 
     # Broadcast the message to the room
-    emit('receive_message', {'username': username, 'message': message_content}, room=room)
+    emit('receive_message', {
+        "sender_id": message.sender_id,
+        "sender_username": message.sender.username,
+        "recipient_id": message.recipient_id,
+        "recipient_username": message.recipient.username,
+        "message": message.content,
+        "timestamp": message.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    }, room=room)
 
 @socketio.on('join_room')
 def handle_join_room(data):
@@ -527,27 +534,30 @@ from . import db
 @main.route('/messages/send', methods=['POST'])
 @login_required
 def send_message():
-    """
-    Send a message to a friend.
-    """
-    data = request.json
+    data = request.get_json()
     recipient_id = data.get('recipient_id')
     content = data.get('content')
 
-    if not recipient_id or not content:
-        return jsonify({'error': 'Recipient and content are required'}), 400
-
-    # Ensure the recipient is a friend
-    recipient = User.query.get(recipient_id)
-    if not recipient:
-        return jsonify({'error': 'Recipient not found'}), 404
-
-    # Create and store the message
-    message = Message(sender_id=current_user.id, recipient_id=recipient_id, content=content)
+    # Create a new message
+    message = Message(
+        sender_id=current_user.id,
+        recipient_id=recipient_id,
+        content=content
+    )
     db.session.add(message)
     db.session.commit()
 
-    return jsonify({'success': 'Message sent'}), 200
+    # Emit the message to the recipient
+    socketio.emit('receive_message', {
+        "sender_id": message.sender_id,
+        "sender_username": message.sender.username,
+        "recipient_id": message.recipient_id,
+        "recipient_username": message.recipient.username,
+        "message": message.content,
+        "timestamp": message.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    }, room=f"room_{recipient_id}")
+
+    return jsonify({"success": True})
 
 @main.route('/messages/<int:friend_id>', methods=['GET'])
 @login_required
@@ -555,7 +565,6 @@ def get_messages(friend_id):
     """
     Fetch messages between the current user and a friend.
     """
-    # Ensure the friend is valid
     friend = User.query.get(friend_id)
     if not friend:
         return jsonify({'error': 'Friend not found'}), 404
@@ -571,12 +580,14 @@ def get_messages(friend_id):
         {
             'id': message.id,
             'sender_id': message.sender_id,
+            'sender_username': message.sender.username,
             'recipient_id': message.recipient_id,
+            'recipient_username': message.recipient.username,
             'content': message.content,
             'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'read': message.read
         }
         for message in messages
     ]
 
-    return jsonify(messages_data), 200
+    return jsonify(messages_data)
+

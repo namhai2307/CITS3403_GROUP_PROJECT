@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 messagesContainer.innerHTML = ''; // Clear previous messages
                 messages.forEach(msg => {
                     const messageElement = document.createElement('div');
-                    const senderName = msg.sender_id === currentUserId ? 'You' : friendSelector.options[friendSelector.selectedIndex].text;
+                    const senderName = msg.sender_id === parseInt(currentUserId) ? 'You' : msg.sender_username;
                     const timestamp = new Date(msg.timestamp).toLocaleString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         month: 'short',
                         day: 'numeric',
                     });
+
                     messageElement.textContent = `${senderName}: ${msg.content} (${timestamp})`;
                     messagesContainer.appendChild(messageElement);
                 });
@@ -56,14 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Listen for incoming messages
     socket.on('receive_message', (data) => {
         const messageElement = document.createElement('div');
-        const senderName = data.username === username ? 'You' : data.username;
-        const timestamp = new Date().toLocaleString('en-US', {
+        const senderName = data.sender_id === parseInt(currentUserId) ? 'You' : data.sender_username;
+        const timestamp = new Date(data.timestamp).toLocaleString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: true,
             month: 'short',
             day: 'numeric',
         });
+
         messageElement.textContent = `${senderName}: ${data.message} (${timestamp})`;
         messagesContainer.appendChild(messageElement);
         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Auto-scroll to the bottom

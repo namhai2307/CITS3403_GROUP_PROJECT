@@ -449,6 +449,7 @@ def delete_friend_request(friendship_id):
         flash('Invalid request.', 'error')
     return redirect(url_for('main.profile'))
 
+#Chat room section start here
 @main.route('/chat')
 @login_required
 def chat():
@@ -574,7 +575,8 @@ def get_messages(friend_id):
             'recipient_id': message.recipient_id,
             'content': message.content,
             'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'read': message.read
+            'read': message.read,
+            'sender_username': message.sender.username
         }
         for message in messages
     ]

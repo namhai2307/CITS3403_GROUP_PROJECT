@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 messagesContainer.innerHTML = ''; // Clear previous messages
                 messages.forEach(msg => {
                     const messageElement = document.createElement('div');
-                    const senderName = msg.sender_id === currentUserId ? 'You' : friendSelector.options[friendSelector.selectedIndex].text;
+                    const senderName = msg.sender_id === currentUserId ? 'You': msg.sender_username || 'Friend';
                     const timestamp = new Date(msg.timestamp).toLocaleString('en-US', {
                         hour: '2-digit',
                         minute: '2-digit',
@@ -102,6 +102,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const content = messageInput.value;
         if (room && selectedFriendId && content) {
             socket.emit('send_message', { room: room, username: username, message: message });
+
+            messageInput.value = ''; //  Clear input immediately
+            
             fetch('/messages/send', {
                 method: 'POST',
                 headers: {
@@ -109,13 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 },
                 body: JSON.stringify({ recipient_id: selectedFriendId, content: content })
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        messageInput.value = ''; // Clear the input field
-                        fetchMessages(selectedFriendId); // Refresh messages
-                    }
-                })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    fetchMessages(selectedFriendId); // Refresh messages
+                }
+            })
+            
                 .catch(error => console.error('Error sending message:', error));
         } else {
             alert('Please select a friend and type a message.');

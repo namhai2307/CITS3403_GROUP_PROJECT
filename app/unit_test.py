@@ -14,9 +14,6 @@ from datetime import datetime, timedelta, timezone
 from werkzeug.security import check_password_hash
 
 class PageRedirectionTests(unittest.TestCase):
-    """
-    Test cases for basic routes in the Flask application.
-    """
     def setUp(self):
         """
         Set up the test environment.
@@ -68,10 +65,6 @@ class PageRedirectionTests(unittest.TestCase):
         self.assertIn(b"Login", response.data)
 
 class DatabaseTests(unittest.TestCase):
-    """
-    Test cases for models in the Flask application.
-    """
-
     def setUp(self):
         """
         Set up the test environment.

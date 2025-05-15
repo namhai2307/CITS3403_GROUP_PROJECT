@@ -4,19 +4,6 @@ config.py
 Defines configuration classes for the Flask application, supporting multiple environments
 such as development and testing.
 
-Classes:
-
-- Config:
-    Base configuration class. Loads the SECRET_KEY from environment variables and disables
-    SQLAlchemy modification tracking to reduce overhead.
-
-- DevelopmentConfig(Config):
-    Extends Config with settings for local development, including a file-based SQLite database.
-
-- TestConfig(Config):
-    Extends Config with testing-specific settings, using an in-memory SQLite database and
-    enabling Flask's TESTING mode.
-
 The configuration uses relative paths to set the base directory and supports environment-based
 flexibility via inheritance.
 """

@@ -13,8 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from app import create_app, db
 from app.config import TestConfig
-from app.models import User, Event
-from datetime import datetime
+from app.models import User
 
 localHost = "http://127.0.0.1:5000/"
 

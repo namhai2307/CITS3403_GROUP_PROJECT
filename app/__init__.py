@@ -6,7 +6,6 @@ extensions such as SQLAlchemy, Flask-Migrate, and Flask-Login, and registers blu
 for routing. The configuration can be dynamically loaded based on the provided
 configuration class.
 """
-
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -20,7 +19,7 @@ migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = 'main.login'  
 csrf = CSRFProtect()
-socketio =SocketIO()
+socketio =SocketIO(async_mode='threading')
 
 def create_app(config_class=None):
     """

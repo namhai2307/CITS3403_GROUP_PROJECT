@@ -63,17 +63,16 @@
 
       <!-- Navigation Bar -->
       <nav class="d-flex gap-1"> 
-        <a class="btn btn-outline-primary" href="{{ url_for('main.index') }}">Home</a>
+        <a class="btn btn-outline-primary" id="index-button" href="{{ url_for('main.index') }}">Home</a>
         {% if session.get('logged_in') %}
-            <a class="btn btn-outline-primary" href="{{ url_for('main.dashboard') }}">Dashboard</a>
-            <a class="btn btn-outline-primary" href="{{ url_for('main.visualisation') }}">Visualisation</a>
-            <a class="btn btn-outline-primary" href="{{ url_for('main.logout') }}">Logout</a>
-            <a class="btn btn-outline-primary" href="{{ url_for('main.chat') }}">Chat</a>
+            <a class="btn btn-outline-primary" id="dashboard-button" href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a class="btn btn-outline-primary" id="visualisation-button" href="{{ url_for('main.visualisation') }}">Visualisation</a>
+            <a class="btn btn-outline-primary"id="logout-button" href="{{ url_for('main.logout') }}">Logout</a>
         {% else %}
-            <a class="btn btn-outline-primary" href="{{ url_for('main.login') }}">Login/Signup</a>
+            <a class="btn btn-outline-primary" id="login-button" href="{{ url_for('main.login') }}">Login/Signup</a>
         {% endif %}
-        <a class="btn btn-outline-primary" href="{{ url_for('main.profile') }}">Profile</a>
-        <a class="btn btn-outline-primary" href="{{ url_for('main.help') }}">Help</a>
+        <a class="btn btn-outline-primary" id="profile-button" href="{{ url_for('main.profile') }}">Profile</a>
+        <a class="btn btn-outline-primary" id="help-button" href="{{ url_for('main.help') }}">Help</a>
       </nav>
     </div>
 

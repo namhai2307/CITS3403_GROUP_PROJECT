@@ -183,7 +183,7 @@
 
 <!-- Rendering the calendar to show event durations with heatmap and editing/deleting events -->
 <script>
-    const eventDurations = JSON.parse('{{event_durations|tojson|safe}}');
+    window.eventDurations = JSON.parse('{{ event_durations|tojson|safe }}');
 </script>
 
 {% endblock %}

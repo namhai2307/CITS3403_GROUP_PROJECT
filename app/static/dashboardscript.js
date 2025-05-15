@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', function(){
     let currentDate = new Date();
     let today = new Date();
 
+    // Refresh heatmap data and calendar
+    function refreshEventDurationsAndCalendar() {
+        fetch('/api/event_durations')
+            .then(res => res.json())
+            .then(data => {
+                for (const key in window.eventDurations) delete window.eventDurations[key];
+                Object.assign(window.eventDurations, data);
+                renderCalendar(currentDate);
+            });
+    }
+
     // Rendering Calendar
     function renderCalendar(date) {
         const year = date.getFullYear();
@@ -54,7 +65,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
             // Heatmap: Coloring based on eventDurations
             const dateStr = dayDiv.dataset.date;
-            const duration = (typeof eventDurations !== 'undefined' && eventDurations[dateStr]) ? eventDurations[dateStr] : 0;
+            const duration = (window.eventDurations && window.eventDurations[dateStr]) ? window.eventDurations[dateStr] : 0;
+
+            
+            dayDiv.style.backgroundColor = '';
+            dayDiv.style.color = '';
+
             if (duration === 0) {
                 dayDiv.style.backgroundColor = 'white';
             } else if (duration <= 2) {
@@ -85,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function(){
                 dayDiv.style.backgroundColor = '#000000';
                 dayDiv.style.color = 'white';
             }
+
+            console.log(dateStr, duration, dayDiv.style.backgroundColor);
 
             // Highlight today
             if (i === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
@@ -170,6 +188,7 @@ document.addEventListener('DOMContentLoaded', function(){
             }).then(response => {
                 if (response.ok) {
                     loadEventsForDate(getSelectedDate());
+                    refreshEventDurationsAndCalendar();
                 } else {
                     console.error('Failed to delete event:', response.statusText);
                 }
@@ -223,6 +242,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editEventModal'));
                 modal.hide();
                 loadEventsForDate(getSelectedDate());
+                refreshEventDurationsAndCalendar();
             }
         })
     });

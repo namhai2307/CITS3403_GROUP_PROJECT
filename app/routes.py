@@ -96,9 +96,11 @@ def profile():
     friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
     friends = [User.query.get(f.friend_id) for f in friendships]
 
-    pending_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
-    pending_pairs = [(req, User.query.get(req.user_id)) for req in pending_requests]
+    incoming_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
+    incoming_pairs = [(req, User.query.get(req.user_id)) for req in incoming_requests]
 
+    outgoing_requests = Friendship.query.filter_by(user_id=current_user.id, status='pending').all()
+    outgoing_pairs = [(req, User.query.get(req.friend_id)) for req in outgoing_requests]
 
     if request.method == 'POST':
         search_query = request.form.get('search_query', '').strip()
@@ -109,16 +111,16 @@ def profile():
                 users=users,
                 search_query=search_query,
                 friends=friends,
-                pending_requests=pending_requests,
-                pending_pairs=pending_pairs
+                incoming_pairs=incoming_pairs,
+                outgoing_pairs=outgoing_pairs
             )
     else:
         return render_template(
             'profile.html',
             users=None,
             friends=friends,
-            pending_requests=pending_requests,
-            pending_pairs=pending_pairs
+            incoming_pairs=incoming_pairs,
+            outgoing_pairs=outgoing_pairs
         )
 
 @main.route('/search_users', methods=['POST'])
@@ -481,7 +483,39 @@ def delete_friend_request(friendship_id):
         flash('Invalid request.', 'error')
     return redirect(url_for('main.profile'))
 
-#Chat room section start here
+@main.route('/remove_friend/<int:friend_id>', methods=['POST'])
+@login_required
+def remove_friend(friend_id):
+    """
+    Remove an existing friend.
+    """
+    friendship = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend_id, status='accepted').first()
+    mutual_friendship = Friendship.query.filter_by(user_id=friend_id, friend_id=current_user.id, status='accepted').first()
+
+    if friendship:
+        db.session.delete(friendship)
+    if mutual_friendship:
+        db.session.delete(mutual_friendship)
+    db.session.commit()
+    flash('Friend removed successfully.', 'info')
+    return redirect(url_for('main.profile'))
+
+@main.route('/cancel_friend_request/<int:friendship_id>', methods=['POST'])
+@login_required
+def cancel_friend_request(friendship_id):
+    """
+    Cancel a friend request sent by the current user.
+    """
+    friendship = Friendship.query.get_or_404(friendship_id)
+    if friendship.user_id == current_user.id and friendship.status == 'pending':
+        db.session.delete(friendship)
+        db.session.commit()
+        flash('Friend request canceled.', 'info')
+    else:
+        flash('Invalid request.', 'error')
+    return redirect(url_for('main.profile'))
+
+
 @main.route('/chat')
 @login_required
 def chat():
@@ -612,4 +646,6 @@ def get_messages(friend_id):
     ]
 
     return jsonify(messages_data)
+
+
 

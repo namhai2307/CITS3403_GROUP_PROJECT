@@ -89,21 +89,27 @@
                             <li class="list-group-item d-flex align-items-center">
                                 <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic me-2" style="width:32px;height:32px;">
                                 <span>{{ friend.username }} ({{ friend.email }})</span>
+                                <form action="{{ url_for('main.remove_friend', friend_id=friend.id) }}" method="POST" class="ms-auto">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Remove Friend</button>
+                                </form>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
                     <p class="text-muted">You have no friends yet.</p>
                 {% endif %}
-           
             </div>
 
             <!-- Pending Friend Requests Section -->
             <div class="pending-requests mt-4">
                 <h3>Pending Friend Requests</h3>
-                {% if pending_pairs and pending_pairs|length > 0 %}
+
+                <!-- Incoming Friend Requests -->
+                <h5>Requests Sent to You</h5>
+                {% if incoming_pairs and incoming_pairs|length > 0 %}
                     <ul class="list-group">
-                        {% for req, user in pending_pairs %}
+                        {% for req, user in incoming_pairs %}
                             <li class="list-group-item d-flex align-items-center">
                                 <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic me-2" style="width:32px;height:32px;">
                                 <span>{{ user.username }} ({{ user.email }})</span>
@@ -119,7 +125,26 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-muted">No pending requests.</p>
+                    <p class="text-muted">No incoming friend requests.</p>
+                {% endif %}
+
+                <!-- Outgoing Friend Requests -->
+                <h5>Requests You Sent</h5>
+                {% if outgoing_pairs and outgoing_pairs|length > 0 %}
+                    <ul class="list-group">
+                        {% for req, user in outgoing_pairs %}
+                            <li class="list-group-item d-flex align-items-center">
+                                <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic me-2" style="width:32px;height:32px;">
+                                <span>{{ user.username }} ({{ user.email }})</span>
+                                <form action="{{ url_for('main.cancel_friend_request', friendship_id=req.id) }}" method="POST" class="ms-auto">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Cancel Request</button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No outgoing friend requests.</p>
                 {% endif %}
             </div>
         </div>

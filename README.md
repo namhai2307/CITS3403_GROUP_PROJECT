@@ -37,17 +37,19 @@ Use our analytical tools to track when you are most busy across the week to plan
    **For Windows:**
    ```bash
    python3 -m venv venv 
-   venv/Scripts/activate
+   .\venv\Scripts\Activate.ps1
    ```
-
    Once activated the terminal prompt should shoul (venv).
-
+2. **Installing the necessary packages**
+   ```bash
+   pip install -r requirements.txt
+   ```
 3. **Initalise the database**
    ```bash
    flask db init
    flask db migrate
    flask db upgrade
-
+   ```
 4. **Setting up your own secret key to run the web app in your local environment**
   
    ***Note**: Make sure to replace the "your-production-secret-key" to your own secret key message.
@@ -63,7 +65,7 @@ Use our analytical tools to track when you are most busy across the week to plan
    ```
    
 
-6. Run the application on your localhost
+5. Run the application on your localhost
    ```bash
    flask run
 

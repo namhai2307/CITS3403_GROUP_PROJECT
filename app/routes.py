@@ -47,7 +47,7 @@ def login():
             flash('Login successful! Welcome back, {}.'.format(user.username), 'success')
             return redirect(url_for('main.dashboard'))
         else:
-            flash('Invalid email or password. Please try again.', 'error')
+            flash('Invalid email or password. Please try again.', 'danger')
 
     return render_template('login.html', form=form)
 
@@ -69,11 +69,11 @@ def signup():
         ).first()
         
         if existing_user:
-            flash('Username or email already exists. Please try again.', 'error')
+            flash('Username or email already exists. Please try again.', 'danger')
             return redirect(url_for('main.signup'))
             
         if form.password.data != form.confirm_password.data:
-            flash('Passwords do not match. Please try again.', 'error')
+            flash('Passwords do not match. Please try again.', 'danger')
             return redirect(url_for('main.signup'))
             
         user = User(
@@ -96,9 +96,11 @@ def profile():
     friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
     friends = [User.query.get(f.friend_id) for f in friendships]
 
-    pending_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
-    pending_pairs = [(req, User.query.get(req.user_id)) for req in pending_requests]
+    incoming_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
+    incoming_pairs = [(req, User.query.get(req.user_id)) for req in incoming_requests]
 
+    outgoing_requests = Friendship.query.filter_by(user_id=current_user.id, status='pending').all()
+    outgoing_pairs = [(req, User.query.get(req.friend_id)) for req in outgoing_requests]
 
     if request.method == 'POST':
         search_query = request.form.get('search_query', '').strip()
@@ -109,16 +111,16 @@ def profile():
                 users=users,
                 search_query=search_query,
                 friends=friends,
-                pending_requests=pending_requests,
-                pending_pairs=pending_pairs
+                incoming_pairs=incoming_pairs,
+                outgoing_pairs=outgoing_pairs
             )
     else:
         return render_template(
             'profile.html',
             users=None,
             friends=friends,
-            pending_requests=pending_requests,
-            pending_pairs=pending_pairs
+            incoming_pairs=incoming_pairs,
+            outgoing_pairs=outgoing_pairs
         )
 
 @main.route('/search_users', methods=['POST'])
@@ -248,7 +250,7 @@ def get_events_by_date(date):
         } for e in events])
     
     except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
+        return jsonify({'danger': 'Invalid date format'}), 400
 
 @main.route('/api/events/<int:event_id>', methods=['PUT'])
 @login_required
@@ -401,12 +403,12 @@ def get_events():
     """
     date_str = request.args.get('date')
     if not date_str:
-        return jsonify({'error': 'Date is required'}), 400
+        return jsonify({'danger': 'Date is required'}), 400
 
     try:
         selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
+        return jsonify({'danger': 'Invalid date format'}), 400
 
     start_of_day = datetime.combine(selected_date, datetime.min.time())
     end_of_day = datetime.combine(selected_date, datetime.max.time())
@@ -446,7 +448,7 @@ def add_friend():
         else:
             flash('Friend request already sent or you are already friends.', 'info')
     else:
-        flash('Invalid friend ID.', 'error')
+        flash('Invalid friend ID.', 'danger')
     return redirect(url_for('main.profile'))
 
 @main.route('/accept_friend/<int:friendship_id>', methods=['POST'])
@@ -463,7 +465,7 @@ def accept_friend(friendship_id):
         db.session.commit()
         flash('Friend request accepted!', 'success')
     else:
-        flash('Invalid request.', 'error')
+        flash('Invalid request.', 'danger')
     return redirect(url_for('main.profile'))
 
 @main.route('/delete_friend_request/<int:friendship_id>', methods=['POST'])
@@ -478,10 +480,42 @@ def delete_friend_request(friendship_id):
         db.session.commit()
         flash('Friend request deleted.', 'info')
     else:
-        flash('Invalid request.', 'error')
+        flash('Invalid request.', 'danger')
     return redirect(url_for('main.profile'))
 
-#Chat room section start here
+@main.route('/remove_friend/<int:friend_id>', methods=['POST'])
+@login_required
+def remove_friend(friend_id):
+    """
+    Remove an existing friend.
+    """
+    friendship = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend_id, status='accepted').first()
+    mutual_friendship = Friendship.query.filter_by(user_id=friend_id, friend_id=current_user.id, status='accepted').first()
+
+    if friendship:
+        db.session.delete(friendship)
+    if mutual_friendship:
+        db.session.delete(mutual_friendship)
+    db.session.commit()
+    flash('Friend removed successfully.', 'info')
+    return redirect(url_for('main.profile'))
+
+@main.route('/cancel_friend_request/<int:friendship_id>', methods=['POST'])
+@login_required
+def cancel_friend_request(friendship_id):
+    """
+    Cancel a friend request sent by the
+    """
+    friendship = Friendship.query.get_or_404(friendship_id)
+    if friendship.user_id == current_user.id and friendship.status == 'pending':
+        db.session.delete(friendship)
+        db.session.commit()
+        flash('Friend request canceled.', 'info')
+    else:
+        flash('Invalid request.', 'danger')
+    return redirect(url_for('main.profile'))
+
+
 @main.route('/chat')
 @login_required
 def chat():
@@ -591,7 +625,7 @@ def get_messages(friend_id):
     """
     friend = User.query.get(friend_id)
     if not friend:
-        return jsonify({'error': 'Friend not found'}), 404
+        return jsonify({'danger': 'Friend not found'}), 404
 
     messages = Message.query.filter(
         ((Message.sender_id == current_user.id) & (Message.recipient_id == friend_id)) |
@@ -612,4 +646,69 @@ def get_messages(friend_id):
     ]
 
     return jsonify(messages_data)
+
+@main.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    """
+    Handle password change for the logged-in user.
+    Checks on the backend to ensure the new password is not the same as the old one,
+    and that it meets the required criteria.
+    """
+    old_password = request.form.get('oldPassword')
+    new_password = request.form.get('newPassword')
+    conf_password = request.form.get('confPassword')
+
+    if not current_user.check_password(old_password):
+        flash('Current password is incorrect.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    if current_user.check_password(new_password):
+        flash('New password cannot be the same as the current password.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    if len(new_password) < 12:
+        flash('New password must be at least 12 characters long.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    if new_password != conf_password:
+        flash('New passwords do not match.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    current_user.set_password(new_password)
+    db.session.commit()
+    flash('Password changed successfully!', 'success')
+    return redirect(url_for('main.profile'))
+
+@main.route('/change_email', methods=['POST'])
+@login_required
+def change_email():
+    """
+    Handle email change for the logged-in user.
+    Checks on the backend to ensure the new email is not the same as the old one,
+    and that it meets the required criteria.
+    """
+    password = request.form.get('password')
+    new_email = request.form.get('newEmail')
+    conf_email = request.form.get('confEmail')
+
+    if not current_user.check_password(password):
+        flash('Password is incorrect.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    if new_email != conf_email:
+        flash('New emails do not match.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    existing_user = User.query.filter_by(email=new_email).first()
+    if existing_user:
+        flash('This email is already in use.', 'danger')
+        return redirect(url_for('main.profile'))
+
+    current_user.email = new_email
+    db.session.commit()
+    flash('Email changed successfully!', 'success')
+    return redirect(url_for('main.profile'))
+
+
 

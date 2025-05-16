@@ -1,3 +1,4 @@
+/* Chat Page Styles */
 .chat-page {
     display: flex;
     justify-content: center;
@@ -8,7 +9,7 @@
   
   .chat-page .app {
     display: flex;
-    flex-direction: row; /* Ensure left-to-right layout */
+    flex-direction: row; 
     width: 900px;
     height: 600px;
     border-radius: 10px;

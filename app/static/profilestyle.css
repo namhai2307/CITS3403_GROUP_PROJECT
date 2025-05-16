@@ -19,6 +19,15 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Add styling for h5 */
+h5 {
+    font-size: 16px; 
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: left;
+}
+
 /* Form box styling */
 .form-box {
     margin: 20px auto;
@@ -110,6 +119,35 @@
     background-color: #0056b3;
 }
 
+/* Profile details styling */
+.profile-details {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.profile-details h3 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.profile-details p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.profile-details img {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
 /* Responsive profile and friend cards */
 @media (max-width: 992px) {
   #profile {
@@ -117,7 +155,9 @@
   }
   .form-box {
     max-width: 100%;
+    margin: 20px;
     padding: 10px;
+    flex: 1;
   }
 }
 

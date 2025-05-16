@@ -478,6 +478,7 @@ def delete_friend_request(friendship_id):
         flash('Invalid request.', 'error')
     return redirect(url_for('main.profile'))
 
+#Chat room section start here
 @main.route('/chat')
 @login_required
 def chat():

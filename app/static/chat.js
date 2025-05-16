@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const content = messageInput.value;
         if (room && selectedFriendId && content) {
             socket.emit('send_message', { room: room, username: username, message: message });
+
+            messageInput.value = ''; //  Clear input immediately
+            
             fetch('/messages/send', {
                 method: 'POST',
                 headers: {

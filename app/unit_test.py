@@ -11,16 +11,14 @@ from app import create_app, db
 from app.models import User, Event
 from app.config import TestConfig
 from datetime import datetime, timedelta, timezone
+from werkzeug.security import check_password_hash
 
 class PageRedirectionTests(unittest.TestCase):
-    """
-    Test cases for basic routes in the Flask application.
-    """
     def setUp(self):
         """
         Set up the test environment.
 
-        Creates a test application using the TestConfig configuration,
+        Creates a test application using the UnitTestConfig configuration,
         initializes the application context, and sets up the in-memory
         SQLite database.
         """
@@ -67,10 +65,6 @@ class PageRedirectionTests(unittest.TestCase):
         self.assertIn(b"Login", response.data)
 
 class DatabaseTests(unittest.TestCase):
-    """
-    Test cases for models in the Flask application.
-    """
-
     def setUp(self):
         """
         Set up the test environment.
@@ -84,6 +78,18 @@ class DatabaseTests(unittest.TestCase):
         self.app_context.push()
         db.create_all()
 
+    def add_test_data_to_db(self):
+        """
+        Add test data to the database.
+
+        Creates a user and an event, associates the event with the user,
+        and commits the changes to the database.
+        """
+        user = User(username="queryuser", email="query@example.com")
+        user.set_password("QueryPassword!")
+        db.session.add(user)
+        db.session.commit() 
+
     def tearDown(self):
         """
         Clean up after each test.
@@ -95,32 +101,55 @@ class DatabaseTests(unittest.TestCase):
         db.drop_all()
         self.app_context.pop()
 
+    def test_insert_user(self):
+        """
+        Test inserting a user into the database.
+
+        Uses add_test_data_to_db to insert a user, then queries the user
+        to ensure it was inserted and has an ID assigned.
+        """
+        self.add_test_data_to_db()
+        user = User.query.filter_by(username="queryuser").first()
+        self.assertIsNotNone(user)
+        self.assertIsNotNone(user.id)
+
+    def test_query_user(self):
+        """
+        Test querying a user from the database.
+
+        Uses add_test_data_to_db to insert a user, then queries the user
+        by username to ensure it was inserted correctly.
+        """
+        self.add_test_data_to_db()
+        queried_user = User.query.filter_by(username="queryuser").first()
+        self.assertIsNotNone(queried_user)
+        self.assertEqual(queried_user.email, "query@example.com")
+        self.assertTrue(queried_user.check_password("QueryPassword!"))
+
     def test_user_password_hashing(self):
         """
-        Test password hashing and verification.
+        Test password hashing and verification using werkzeug's set_password.
 
-        Creates a user, sets a password, and verifies that the password
-        can be correctly hashed and verified.
+        Creates a user, sets a password using werkzeug's set_password, and verifies that the password
+        can be correctly hashed and verified with check_password.
         """
-        user = User(username="testuser", email="test@example.com")
-        user.set_password("Password1234!")
-        db.session.add(user)
+        self.add_test_data_to_db()
+        user = User.query.filter_by(username="queryuser").first()
+        user.set_password("QueryPassword!")
         db.session.commit()
-
-        self.assertTrue(user.check_password("Password1234!"))
+        self.assertTrue(user.check_password("QueryPassword!"))
         self.assertFalse(user.check_password("Wrongpassword"))
+        self.assertTrue(check_password_hash(user.password_hash, "QueryPassword!"))
 
     def test_create_event(self):
         """
         Test creating an event and associating it with a user.
 
-        Creates a user and an event, associates the event with the user,
-        and verifies that the event is correctly linked to the user.
+        Uses add_test_data_to_db to insert a user, then creates an event,
+        associates it with the user, and verifies the association.
         """
-        user = User(username="testuser", email="test@example.com")
-        user.set_password("Password1234!")
-        db.session.add(user)
-        db.session.commit()
+        self.add_test_data_to_db()
+        user = User.query.filter_by(username="queryuser").first()
 
         event = Event(
             title="Test Event",
@@ -128,7 +157,8 @@ class DatabaseTests(unittest.TestCase):
             start_time=datetime.now(timezone.utc),
             end_time=datetime.now(timezone.utc) + timedelta(hours=2),
             privacy_level="private",
-            user_id=user.id
+            user_id=user.id,
+            created_by=user.id
         )
         db.session.add(event)
         db.session.commit()
@@ -150,12 +180,10 @@ class DatabaseTests(unittest.TestCase):
             start_time=datetime(2025, 5, 6, 10, 0, tzinfo=timezone.utc),
             end_time=datetime(2025, 5, 6, 12, 0, tzinfo=timezone.utc),
             privacy_level="private",
-            user_id=1
+            user_id=1,
+            created_by=1
         )
-        self.assertEqual(
-            repr(event),
-            "<Event Test Event (2025-05-06 10:00:00+00:00 to 2025-05-06 12:00:00+00:00)>"
-        )
+        self.assertEqual(repr(event), "<Event Test Event (2025-05-06 10:00:00+00:00 to 2025-05-06 12:00:00+00:00)>")
 
 if __name__ == '__main__':
     unittest.main()

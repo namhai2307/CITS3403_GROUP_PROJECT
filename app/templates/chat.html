@@ -1,0 +1,36 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="chat-page">
+  <div class="app">
+    <!-- LEFT: Friend Selector Sidebar -->
+    <div class="chat-sidebar">
+      <h3>Messaging</h3>
+      <div class="mb-3">
+        <label for="friend-selector" class="form-label">Select a Friend:</label>
+        <select id="friend-selector" class="form-select">
+          <option value="" selected disabled>Select a friend to chat with</option>
+          {% for friend in friends %}
+            <option value="{{ friend.id }}">{{ friend.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <!-- RIGHT: Chat Room -->
+    <div id="chat-room" class="chat-window">
+      <div id="messages" class="chat-messages">
+      </div>
+      <form id="message-form" class="chat-input">
+        <input type="text" id="message-input" class="form-control" placeholder="Type a message..." required>
+        <button type="submit" class="btn btn-primary">Send</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+    const username = "{{ username }}";
+    const currentUserId = "{{ current_user.id }}";
+</script>
+{% endblock %}

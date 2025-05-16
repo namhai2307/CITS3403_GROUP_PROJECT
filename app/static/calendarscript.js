@@ -1,14 +1,41 @@
+/**
+ * @fileoverview Interactive calendar UI with event heatmap and date-based event retrieval.
+ *
+ * This script dynamically renders a monthly calendar view with heatmap-style coloring
+ * based on event duration. It enables users to navigate between months and fetch
+ * daily events on click. The schedule for a selected day is retrieved from the backend
+ * via a RESTful API and rendered dynamically.
+ *
+ * Features:
+ * - Month navigation (previous/next)
+ * - Dynamic day cell rendering with faded edge days from adjacent months
+ * - Heatmap visualization of event density using eventDurations object
+ * - AJAX-based fetch of events for a selected day
+ * - URL update to reflect selected date
+ * - Graceful fallback when an editing form is active
+ *
+ * Dependencies:
+ * - A global object `eventDurations` containing event duration per date (in minutes or hours)
+ * - HTML elements with IDs: 'month-year', 'days', 'prev', 'next', 'today-events', 'schedule-section', 'editEventForm'
+ * - Bootstrap icons and utility classes for styling
+ *
+ */
+
 function showForm(formID) {
     document.querySelectorAll(".form-box").forEach(form => form.classList.remove("active"));
     document.getElementById(formID).classList.add("active")
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    if (document.getElementById('editEventForm')) {
+        return;
+    }
+
     const monthYear = document.getElementById("month-year");
     const daysContainer = document.getElementById("days");
     const prevButton = document.getElementById('prev');
     const nextButton = document.getElementById('next');
-    const todayEventsContainer = document.getElementById('today-events'); // Container for today's events
+    const todayEventsContainer = document.getElementById('today-events');
 
     const urlParams = new URLSearchParams(window.location.search);
     const urlDate = urlParams.get('date');
@@ -29,7 +56,6 @@ document.addEventListener('DOMContentLoaded', function () {
         monthYear.textContent = `${months[month]} ${year}`;
         daysContainer.innerHTML = '';
 
-        // Previous month's dates
         const prevMonthLastDay = new Date(year, month, 0).getDate();
         for (let i = firstDay; i > 0; i--) {
             const dayDiv = document.createElement('div');
@@ -38,40 +64,34 @@ document.addEventListener('DOMContentLoaded', function () {
             daysContainer.appendChild(dayDiv);
         }
 
-        // Current month's dates
         for (let i = 1; i <= lastDay; i++) {
             const dayDiv = document.createElement('div');
             dayDiv.textContent = i;
             dayDiv.classList.add('day-number');
 
-            // Highlight Logic
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
             const duration = eventDurations[dateStr] || 0;
-
-            // Assign data-duration attribute
+    
             dayDiv.setAttribute('data-duration', duration);
 
-            // Apply heatmap colors based on event duration
             if (duration === 0) {
-                dayDiv.style.backgroundColor = 'white'; // No events
+                dayDiv.style.backgroundColor = 'white'; 
             } else if (duration <= 2) {
-                dayDiv.style.backgroundColor = '#ffcccc'; // Light red for few events
+                dayDiv.style.backgroundColor = '#ffcccc'; 
             } else if (duration <= 5) {
-                dayDiv.style.backgroundColor = '#ff6666'; // Medium red for more events
+                dayDiv.style.backgroundColor = '#ff6666';
             } else {
-                dayDiv.style.backgroundColor = '#cc0000'; // Dark red for most events
+                dayDiv.style.backgroundColor = '#cc0000'; 
             }
 
-            // Add click event
             dayDiv.addEventListener('click', function () {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                fetchEventsForDay(dateStr); // Fetch and display events for the selected day
+                fetchEventsForDay(dateStr); 
             });
 
             daysContainer.appendChild(dayDiv);
         }
 
-        // Next month's dates
         const nextMonthStartDay = 7 - new Date(year, month + 1, 0).getDay() - 1;
         for (let i = 1; i <= nextMonthStartDay; i++) {
             const dayDiv = document.createElement('div');
@@ -81,26 +101,25 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Fetch and display events for a specific day
     function fetchEventsForDay(dateStr) {
-        // Update the URL with the selected date
+        
+        if (document.getElementById('editEventForm')) {
+            return;
+        }
+
         const url = new URL(window.location);
         url.searchParams.set('date', dateStr);
         window.history.pushState({}, '', url);
 
-        // Update the schedule header on the frontend
         const scheduleHeader = document.querySelector('#schedule-section h5');
         const newDate = new Date(dateStr);
-        // Format the date as "Weekday, Month day" (using en-US locale here)
         const options = { weekday: 'long', month: 'long', day: 'numeric' };
         const formattedDate = newDate.toLocaleDateString('en-US', options);
         scheduleHeader.innerHTML = `<i class="bi bi-list-task me-2"></i>${formattedDate} Schedule`;
 
-        // Clear the today's events container
         const todayEventsContainer = document.getElementById('today-events');
         todayEventsContainer.innerHTML = '';
 
-        // Fetch events for the selected day
         fetch(`/api/events?date=${dateStr}`)
             .then(response => response.json())
             .then(data => {
@@ -118,25 +137,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         todayEventsContainer.appendChild(eventDiv);
                     });
                 } else {
-                    // Clear container if no events found
                     todayEventsContainer.innerHTML = '';
                 }
             })
             .catch(error => console.error('Error fetching events:', error));
     }
 
-    // Previous button event listener - toggle previous month
     prevButton.addEventListener('click', function () {
         currentDate.setMonth(currentDate.getMonth() - 1);
         renderCalendar(currentDate);
     });
 
-    // Next button event listener - toggle next month
     nextButton.addEventListener('click', function () {
         currentDate.setMonth(currentDate.getMonth() + 1);
         renderCalendar(currentDate);
     });
 
-    // Initial render
     renderCalendar(currentDate);
 });

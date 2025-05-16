@@ -5,10 +5,12 @@
 {% endblock %}
 
 {% block content %}
-  <aside class="sidebar">
+<div class="container help-container">
+  <!-- 左侧导航 -->
+  <aside class="help-sidebar">
     <nav>
-        <ul style="list-style-type: square;">
-            <li> <a href="#makeAcount">Making Your Account</a> </li>
+        <ul>
+            <li> <a href="#makeAcount" class="active">Making Your Account</a> </li>
             <li> <a href="#changeDetails">Changing Your Details</a> </li>
             <li> <a href="#addEvent">Adding an Event</a> </li>
             <li> <a href="#editEvent">Editing an Event</a> </li>
@@ -16,13 +18,13 @@
             <li> <a href="#addFriend">Adding a Contact</a> </li>
             <li> <a href="#createGroup">Creating a Sharegroup</a> </li>
             <li> <a href="#setTime">Using the "Find a Time" Function</a> </li>
-            <li> <a href="">Top of Page</a> </li>
+            <li> <a href="#">Top of Page</a> </li>
         </ul>
     </nav>
   </aside>
 
   <div class="main-content">
-    <section id="makeAcount">
+    <section id="makeAcount" class="help-section">
       <h2>Making Your Account</h2>
       <p>To create your account, you will need to enter three things. 
         <ol>
@@ -39,12 +41,12 @@
       </p>
     </section>
 
-    <section id="changeDetails">
+    <section id="changeDetails" class="help-section">
       <h2>Changing Your Details</h2>
       <p><b>This function is not yet implemented.</b></p>
     </section>
 
-    <section id="addEvent">
+    <section id="addEvent" class="help-section">
       <h2>Adding An Event</h2>
       <p>You can add new events to your calendar using the <a href='/dashboard'>Dashboard</a> tab. <br>
           Using the "Add Event" form on the left-hand side of the page. Simply fill in the details for your event, then submit to see it added to your calendar on the right.
@@ -58,7 +60,7 @@
       </p>
     </section>
 
-    <section id="editEvent">
+    <section id="editEvent" class="help-section">
       <h2>Editing an Event</h2>
       <p> After creating a new event, events on the day you currently have selected in the calendar will gain a button to either "Edit" or "Delete" the event. <br>
       "Edit" will open a window within the app to change any of the details for the event. Once you are happy with the new details, simply submit the form and your calendar will be updated. If you have started editing the wrong event, simply save without changing or click the X in the rop right of the window.<br>
@@ -67,14 +69,14 @@
       </p>
     </section>
 
-    <section id="colourVis">
+    <section id="colourVis" class="help-section">
       <h2>Why is my Calendar Red?</h2>
       <p>Your calendar responds to your life, updating to let you know at a glance where your time is most precious. As you add more events to a day, it will change colour on your calendar to easily flag it as busier.
           Days will start out white, and become coloured with darker shades of red based on how many hours of that day are occupied by your events.
       </p>
     </section>
 
-    <section id="addFriend">
+    <section id="addFriend" class="help-section">
       <h2>Adding A Contact</h2>
       <p> Send a friend request to your contacts by searching their username on the <a href='/profile'>Profile</a> tab! The users that best match your search term will be displayed beneath the box, so try to be as close to their username as you can. 
           Then it's simply a matter of clicking the "Add Friend" button to ship off the request for them to review. <br>
@@ -82,14 +84,16 @@
       </p>
     </section>
 
-    <section id="createGroup">
+    <section id="createGroup" class="help-section">
       <h2>Creating a Sharegroup</h2>
       <p><b>This function is not yet implemented.</b></p>
     </section>
-    
-    <section id="setTime">
+
+    <section id="setTime" class="help-section">
       <h2>Using the "Find a Time" Function</h2>
       <p><b>This function is not yet implemented.</b></p>
     </section>
   </div>
+</div>
+
 {% endblock %}

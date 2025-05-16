@@ -1,33 +1,9 @@
-/* Sidebar Styles */
-.sidebar {
-  position: fixed;
-  top: 90;
-  left: 0;
-  height: 100vh;
-  width: 250px;
-  padding: 20px;
-}
-
 /* Main content needs left margin to avoid being hidden under sidebar */
 .main-content {
   margin-left: 250px;
   padding: 40px 30px;
   flex: 1;
   width: calc(100% - 250px);
-}
-
-/* Sidebar links style */
-.sidebar a {
-  display: block;
-  margin-bottom: 15px;
-  color: #000000;
-  text-decoration: none;
-  font-weight: bold;
-  transition: color 0.3s;
-}
-
-.sidebar a:hover {
-  color: lightcoral;
 }
 
 /* Help Page Styles */
@@ -39,17 +15,20 @@
 }
 .help-sidebar {
   position: fixed;
-  top: 90px;
+  top: 105px;
+  bottom: 0;
   left: 0;
   min-width: 220px;
   max-width: 260px;
-  width: 220px;
+  width: 250px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 2px 12px rgba(100,100,100,0.06);
   padding: 2rem 1rem 1rem 1rem;
   height: auto;
   z-index: 100;
+  overflow-y: auto;
+  direction: rtl;
 }
 .help-sidebar ul {
   padding-left: 0;
@@ -76,7 +55,7 @@
 .help-main-content {
   flex: 1;
   min-width: 0;
-  margin-left: 240px; 
+  margin-left: 250px; /* 留出侧边栏宽度 */
 }
 .help-section {
   background: #fff;

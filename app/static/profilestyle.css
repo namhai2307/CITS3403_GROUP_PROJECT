@@ -10,10 +10,10 @@
     padding: 20px;
     background: repeating-linear-gradient(
         to bottom,
-        #ffffff, /* White background */
-        #ffffff 40px, /* White stripe height */
-        #f8f9fa 40px, /* Light gray stripe start */
-        #f8f9fa 42px /* Light gray stripe height */
+        #ffffff, 
+        #ffffff 40px, 
+        #f8f9fa 40px, 
+        #f8f9fa 42px 
     );
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

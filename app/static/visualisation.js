@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // Only executed on the visualization. html page
   const friendSelector = document.getElementById('friend-selector');
   const daysContainer = document.getElementById('days');
   const monthYear = document.getElementById('month-year');
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const nextBtn = document.getElementById('next');
 
   if (!friendSelector || !daysContainer || !monthYear || !prevBtn || !nextBtn) {
-    // Not a visualization page, return directly
     return;
   }
 
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     monthYear.textContent = `${months[month]} ${year}`;
 
-    // Previous month's dates
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     for (let i = firstDay; i > 0; i--) {
       const dayDiv = document.createElement('div');
@@ -71,14 +68,12 @@ document.addEventListener('DOMContentLoaded', function () {
       daysContainer.appendChild(dayDiv);
     }
 
-    // Current month's dates
     for (let i = 1; i <= lastDay; i++) {
       const dayDiv = document.createElement('div');
       dayDiv.textContent = i;
       dayDiv.classList.add('day-cell');
       dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
 
-      // Heatmap coloring
       const dateStr = dayDiv.dataset.date;
       const duration = eventDurations[dateStr] || 0;
       if (duration === 0) {
@@ -113,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dayDiv.style.color = 'white';
       }
 
-      // Highlight today
       const today = new Date();
       if (
         i === today.getDate() &&
@@ -123,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
         dayDiv.classList.add('today');
       }
 
-      // Click event
       dayDiv.addEventListener('click', function () {
         document.querySelectorAll('.day-cell').forEach(cell => cell.classList.remove('today'));
         dayDiv.classList.add('today');

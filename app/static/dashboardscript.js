@@ -1,3 +1,31 @@
+/**
+ * @fileoverview Interactive calendar and event management script.
+ *
+ * This script renders a dynamic monthly calendar with color-coded heatmaps based on 
+ * event duration, allows users to view, edit, and delete daily events, and supports 
+ * calendar navigation and live updates to the DOM. Events are fetched and updated 
+ * via RESTful API endpoints.
+ *
+ * Features:
+ * - Heatmap calendar rendering based on `eventDurations`
+ * - Event highlight for the current date and selected day
+ * - Clickable day cells to load and display scheduled events
+ * - Modal-based editing of event details with form pre-population
+ * - Secure event deletion with CSRF protection
+ * - Live update of event list upon edit or delete
+ * - Month-to-month navigation
+ * - Progressive enhancement (gracefully handles missing or incomplete DOM)
+
+ * Dependencies:
+ * - Bootstrap (for modal and styling)
+ * - CSRF token via <meta name="csrf-token">
+ * - HTML elements with IDs: 
+ *   'month-year', 'days', 'today-events', 'schedule-section', 'editEventForm', 
+ *   'editEventModal', 'prev', 'next'
+ * - Global variable: `eventDurations` (object mapping YYYY-MM-DD to duration)
+ * 
+*/
+
 function showForm(formID) {
     document.querySelectorAll(".form-box").forEach(form => {
         form.classList.remove("active");
@@ -26,6 +54,7 @@ document.addEventListener('DOMContentLoaded', function(){
     let currentDate = new Date();
     let today = new Date();
 
+
     // Refresh heatmap data and calendar
     function refreshEventDurationsAndCalendar() {
         fetch('/api/event_durations')
@@ -37,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function(){
             });
     }
 
-    // Rendering Calendar
     function renderCalendar(date) {
         const year = date.getFullYear();
         const month = date.getMonth();
@@ -47,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function(){
         monthYear.textContent = `${months[month]} ${year}`;
         daysContainer.innerHTML = '';
 
-        // Last month's date
         const prevMonthLastDay = new Date(year, month, 0).getDate();
         for (let i = firstDay; i > 0; i--) {
             const dayDiv = document.createElement('div');
@@ -56,14 +83,12 @@ document.addEventListener('DOMContentLoaded', function(){
             daysContainer.appendChild(dayDiv);
         }
 
-        // The current month's date
         for (let i = 1; i <= lastDay; i++){
             const dayDiv = document.createElement('div');
             dayDiv.textContent = i;
             dayDiv.classList.add('day-cell');
             dayDiv.dataset.date = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
 
-            // Heatmap: Coloring based on eventDurations
             const dateStr = dayDiv.dataset.date;
             const duration = (window.eventDurations && window.eventDurations[dateStr]) ? window.eventDurations[dateStr] : 0;
 
@@ -102,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 dayDiv.style.color = 'white';
             }
 
+
             console.log(dateStr, duration, dayDiv.style.backgroundColor);
 
             // Highlight today
@@ -109,13 +135,11 @@ document.addEventListener('DOMContentLoaded', function(){
                 dayDiv.classList.add('today');
             }
 
-            // Click on the event: Highlight and load the event
             dayDiv.addEventListener('click', function () {
                 document.querySelectorAll('.day-cell').forEach(cell => cell.classList.remove('today'));
                 dayDiv.classList.add('today');
                 loadEventsForDate(dayDiv.dataset.date);
 
-                // Update the schedule header with the selected date
                 const scheduleHeader = document.querySelector('#schedule-section h5');
                 const selectedDate = new Date(dayDiv.dataset.date);
                 const options = { weekday: 'long', month: 'long', day: 'numeric' };
@@ -127,13 +151,11 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     }
 
-    // Get the currently selected date
     function getSelectedDate() {
         return document.querySelector('.day-cell.today')?.dataset.date ||
             new Date().toISOString().split('T')[0];
     }
 
-    // List of rendering events
     function renderEventList(events) {
         const container = document.getElementById('today-events');
         container.innerHTML = events.map(event => `
@@ -158,7 +180,6 @@ document.addEventListener('DOMContentLoaded', function(){
         `).join('') || `<div class="alert alert-info mb-0">No events scheduled</div>`;
     }
 
-    // Edit event
     function handleEditEvent(eventId) {
         const eventCard = document.querySelector(`[data-event-id="${eventId}"]`);
         if (!eventCard) return;
@@ -179,7 +200,6 @@ document.addEventListener('DOMContentLoaded', function(){
         modal.show();
     }
 
-    // Delete Event
     function handleDeleteEvent(eventId) {
         if (confirm('Are you sure to delete this event?')) {
             fetch(`/api/events/${eventId}`, { 
@@ -196,7 +216,6 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     }
 
-    // Load an event from a certain day
     window.loadEventsForDate = function (date) {
         fetch(`/api/events/${date}`)
             .then(response => response.json())
@@ -204,7 +223,6 @@ document.addEventListener('DOMContentLoaded', function(){
             .catch(console.error);
     };
 
-    // Event delegation: Handling edit and delete buttons
     document.addEventListener('click', function (e) {
         const eventCard = e.target.closest('[data-event-id]');
         if (!eventCard) return;
@@ -216,7 +234,6 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
-    // Edit Form Submission
     document.getElementById('editEventForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -247,13 +264,11 @@ document.addEventListener('DOMContentLoaded', function(){
         })
     });
 
-    // Rendering Calendar and Events of the Day
     renderCalendar(currentDate);
     const todayDate = new Date();
     const todayStr = `${todayDate.getFullYear()}-${String(todayDate.getMonth() + 1).padStart(2, '0')}-${String(todayDate.getDate()).padStart(2, '0')}`;
     loadEventsForDate(todayStr);
 
-    // Month switching
     document.getElementById('prev').addEventListener('click', function () {
         currentDate.setMonth(currentDate.getMonth() - 1);
         renderCalendar(currentDate);

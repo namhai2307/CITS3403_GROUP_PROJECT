@@ -95,7 +95,7 @@ body.dark-mode .profile-pic {
 /* Fix the buttons to be top right */
 nav {
   display: flex;
-  justify-content: flex-end; /* Make all buttons shift the right */
+  justify-content: flex-end; 
   gap: 10px;
   padding: 10px; 
   background: transparent;

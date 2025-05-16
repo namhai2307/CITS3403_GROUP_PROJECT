@@ -37,7 +37,7 @@ Use our analytical tools to track when you are most busy across the week to plan
    **For Windows:**
    ```bash
    python3 -m venv venv 
-   venv/Scripts/activate
+   .\venv\Scripts\Activate.ps1
    ```
    Once activated the terminal prompt should shoul (venv).
 2. **Installing the necessary packages**

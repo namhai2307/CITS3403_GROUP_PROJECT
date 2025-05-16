@@ -47,7 +47,7 @@ def login():
             flash('Login successful! Welcome back, {}.'.format(user.username), 'success')
             return redirect(url_for('main.dashboard'))
         else:
-            flash('Invalid email or password. Please try again.', 'error')
+            flash('Invalid email or password. Please try again.', 'danger')
 
     return render_template('login.html', form=form)
 
@@ -69,11 +69,11 @@ def signup():
         ).first()
         
         if existing_user:
-            flash('Username or email already exists. Please try again.', 'error')
+            flash('Username or email already exists. Please try again.', 'danger')
             return redirect(url_for('main.signup'))
             
         if form.password.data != form.confirm_password.data:
-            flash('Passwords do not match. Please try again.', 'error')
+            flash('Passwords do not match. Please try again.', 'danger')
             return redirect(url_for('main.signup'))
             
         user = User(
@@ -250,7 +250,7 @@ def get_events_by_date(date):
         } for e in events])
     
     except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
+        return jsonify({'danger': 'Invalid date format'}), 400
 
 @main.route('/api/events/<int:event_id>', methods=['PUT'])
 @login_required
@@ -403,12 +403,12 @@ def get_events():
     """
     date_str = request.args.get('date')
     if not date_str:
-        return jsonify({'error': 'Date is required'}), 400
+        return jsonify({'danger': 'Date is required'}), 400
 
     try:
         selected_date = datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
-        return jsonify({'error': 'Invalid date format'}), 400
+        return jsonify({'danger': 'Invalid date format'}), 400
 
     start_of_day = datetime.combine(selected_date, datetime.min.time())
     end_of_day = datetime.combine(selected_date, datetime.max.time())
@@ -448,7 +448,7 @@ def add_friend():
         else:
             flash('Friend request already sent or you are already friends.', 'info')
     else:
-        flash('Invalid friend ID.', 'error')
+        flash('Invalid friend ID.', 'danger')
     return redirect(url_for('main.profile'))
 
 @main.route('/accept_friend/<int:friendship_id>', methods=['POST'])
@@ -465,7 +465,7 @@ def accept_friend(friendship_id):
         db.session.commit()
         flash('Friend request accepted!', 'success')
     else:
-        flash('Invalid request.', 'error')
+        flash('Invalid request.', 'danger')
     return redirect(url_for('main.profile'))
 
 @main.route('/delete_friend_request/<int:friendship_id>', methods=['POST'])
@@ -480,7 +480,7 @@ def delete_friend_request(friendship_id):
         db.session.commit()
         flash('Friend request deleted.', 'info')
     else:
-        flash('Invalid request.', 'error')
+        flash('Invalid request.', 'danger')
     return redirect(url_for('main.profile'))
 
 @main.route('/remove_friend/<int:friend_id>', methods=['POST'])
@@ -512,7 +512,7 @@ def cancel_friend_request(friendship_id):
         db.session.commit()
         flash('Friend request canceled.', 'info')
     else:
-        flash('Invalid request.', 'error')
+        flash('Invalid request.', 'danger')
     return redirect(url_for('main.profile'))
 
 
@@ -625,7 +625,7 @@ def get_messages(friend_id):
     """
     friend = User.query.get(friend_id)
     if not friend:
-        return jsonify({'error': 'Friend not found'}), 404
+        return jsonify({'danger': 'Friend not found'}), 404
 
     messages = Message.query.filter(
         ((Message.sender_id == current_user.id) & (Message.recipient_id == friend_id)) |
@@ -660,19 +660,19 @@ def change_password():
     conf_password = request.form.get('confPassword')
 
     if not current_user.check_password(old_password):
-        flash('Current password is incorrect.', 'error')
+        flash('Current password is incorrect.', 'danger')
         return redirect(url_for('main.profile'))
 
     if current_user.check_password(new_password):
-        flash('New password cannot be the same as the current password.', 'error')
+        flash('New password cannot be the same as the current password.', 'danger')
         return redirect(url_for('main.profile'))
 
-    if len(new_password) < 8:
-        flash('New password must be at least 8 characters long.', 'error')
+    if len(new_password) < 12:
+        flash('New password must be at least 12 characters long.', 'danger')
         return redirect(url_for('main.profile'))
 
     if new_password != conf_password:
-        flash('New passwords do not match.', 'error')
+        flash('New passwords do not match.', 'danger')
         return redirect(url_for('main.profile'))
 
     current_user.set_password(new_password)
@@ -693,16 +693,16 @@ def change_email():
     conf_email = request.form.get('confEmail')
 
     if not current_user.check_password(password):
-        flash('Password is incorrect.', 'error')
+        flash('Password is incorrect.', 'danger')
         return redirect(url_for('main.profile'))
 
     if new_email != conf_email:
-        flash('New emails do not match.', 'error')
+        flash('New emails do not match.', 'danger')
         return redirect(url_for('main.profile'))
 
     existing_user = User.query.filter_by(email=new_email).first()
     if existing_user:
-        flash('This email is already in use.', 'error')
+        flash('This email is already in use.', 'danger')
         return redirect(url_for('main.profile'))
 
     current_user.email = new_email

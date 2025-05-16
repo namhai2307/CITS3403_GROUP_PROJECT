@@ -9,29 +9,39 @@
 <div class="container">
     <div id="content-area" class="mt-4">
         <div id="profile" class="content-section">
-            <h2 class="text-center">Update Your Details</h2>
+            <!-- User Profile Details -->
+            <div class="profile-details mb-4">
+                <h2 class="text-center">Your Profile</h2>
+                <div class="text-center">
+                    <img src="{{ url_for('static', filename='images/default_profile_pic.png') }}" alt="Profile Picture" class="profile-pic mb-3" style="width: 100px; height: 100px; border-radius: 50%;">
+                    <h3>{{ current_user.username }}</h3>
+                    <p>{{ current_user.email }}</p>
+                </div>
+            </div>
+
+            <!-- Change Password and Email -->
             <div class="d-flex flex-row">
                 <!-- Change Password -->
                 <div class="form-box" id="changePassword">
-                    <!-- <form action="{{ url_for('main.profile') }}" method="POST" id="changePassword"> -->
-                    <form>
+                    <form action="{{ url_for('main.change_password') }}" method="POST" onsubmit="return validatePassword()">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <h3 class="text-center mb-4">Change Your Password</h3>
                         <input type="password" id="oldPassword" name="oldPassword" class="input" placeholder="Current Password" required>
-                        <input type="password" id="newPassword" name="newPassword" class="input" placeholder="New Password" required>
+                        <input type="password" id="newPassword" name="newPassword" class="input" placeholder="New Password" minlength="8" required>
                         <input type="password" id="confPassword" name="confPassword" class="input" placeholder="Confirm Password" required>
-                        <button type="submit" class="btn btn-primary w-100"> Submit </button>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
                     </form>
                 </div>
 
                 <!-- Change Email -->
                 <div class="form-box" id="updateEmail">
-                    <!-- <form action="{{ url_for('main.profile') }}" method="POST" id="changeEmail"> -->
-                    <form>
+                    <form action="{{ url_for('main.change_email') }}" method="POST" onsubmit="return validateEmail()">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <h3 class="text-center mb-4">Change Your Email</h3>
+                        <input type="email" id="newEmail" name="newEmail" class="input" placeholder="New Email" required>
+                        <input type="email" id="confEmail" name="confEmail" class="input" placeholder="Confirm Email" required>
                         <input type="password" id="password" name="password" class="input" placeholder="Confirm Password" required>
-                        <input type="text" id="newEmail" name="newEmail" class="input" placeholder="New Email" required>
-                        <input type="text" id="confEmail" name="confEmail" class="input" placeholder="Confirm Email" required>
-                        <button type="submit" class="btn btn-primary w-100"> Submit</button>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
                     </form>
                 </div>
             </div>

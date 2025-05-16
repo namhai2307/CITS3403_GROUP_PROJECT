@@ -504,7 +504,7 @@ def remove_friend(friend_id):
 @login_required
 def cancel_friend_request(friendship_id):
     """
-    Cancel a friend request sent by the current user.
+    Cancel a friend request sent by the
     """
     friendship = Friendship.query.get_or_404(friendship_id)
     if friendship.user_id == current_user.id and friendship.status == 'pending':
@@ -646,6 +646,69 @@ def get_messages(friend_id):
     ]
 
     return jsonify(messages_data)
+
+@main.route('/change_password', methods=['POST'])
+@login_required
+def change_password():
+    """
+    Handle password change for the logged-in user.
+    Checks on the backend to ensure the new password is not the same as the old one,
+    and that it meets the required criteria.
+    """
+    old_password = request.form.get('oldPassword')
+    new_password = request.form.get('newPassword')
+    conf_password = request.form.get('confPassword')
+
+    if not current_user.check_password(old_password):
+        flash('Current password is incorrect.', 'error')
+        return redirect(url_for('main.profile'))
+
+    if current_user.check_password(new_password):
+        flash('New password cannot be the same as the current password.', 'error')
+        return redirect(url_for('main.profile'))
+
+    if len(new_password) < 8:
+        flash('New password must be at least 8 characters long.', 'error')
+        return redirect(url_for('main.profile'))
+
+    if new_password != conf_password:
+        flash('New passwords do not match.', 'error')
+        return redirect(url_for('main.profile'))
+
+    current_user.set_password(new_password)
+    db.session.commit()
+    flash('Password changed successfully!', 'success')
+    return redirect(url_for('main.profile'))
+
+@main.route('/change_email', methods=['POST'])
+@login_required
+def change_email():
+    """
+    Handle email change for the logged-in user.
+    Checks on the backend to ensure the new email is not the same as the old one,
+    and that it meets the required criteria.
+    """
+    password = request.form.get('password')
+    new_email = request.form.get('newEmail')
+    conf_email = request.form.get('confEmail')
+
+    if not current_user.check_password(password):
+        flash('Password is incorrect.', 'error')
+        return redirect(url_for('main.profile'))
+
+    if new_email != conf_email:
+        flash('New emails do not match.', 'error')
+        return redirect(url_for('main.profile'))
+
+    existing_user = User.query.filter_by(email=new_email).first()
+    if existing_user:
+        flash('This email is already in use.', 'error')
+        return redirect(url_for('main.profile'))
+
+    current_user.email = new_email
+    db.session.commit()
+    flash('Email changed successfully!', 'success')
+    return redirect(url_for('main.profile'))
 
 
 

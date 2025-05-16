@@ -55,3 +55,32 @@ document.getElementById('search-button').addEventListener('click', function () {
         });
     }
 });
+
+function validatePassword() {
+    const newPassword = document.getElementById('newPassword').value;
+    const confPassword = document.getElementById('confPassword').value;
+
+    if (newPassword !== confPassword) {
+        alert('New passwords do not match.');
+        return false;
+    }
+
+    if (newPassword.length < 8) {
+        alert('Password must be at least 8 characters long.');
+        return false;
+    }
+
+    return true;
+}
+
+function validateEmail() {
+    const newEmail = document.getElementById('newEmail').value;
+    const confEmail = document.getElementById('confEmail').value;
+
+    if (newEmail !== confEmail) {
+        alert('Emails do not match.');
+        return false;
+    }
+
+    return true;
+}

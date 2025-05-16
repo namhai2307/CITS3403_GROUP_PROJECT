@@ -1,3 +1,19 @@
+/**
+ * @fileoverview Friend calendar visualization and event management.
+ *
+ * This script provides functionality for rendering a friend's calendar, displaying event durations as a heatmap, and fetching event details for specific days. It also allows navigation between months and dynamically updates the calendar based on the selected friend.
+ *
+ * Features:
+ * - Renders a calendar with event durations visualized as a heatmap
+ * - Fetches and displays events for a specific day
+ * - Allows navigation between months
+ * - Dynamically updates the calendar when a friend is selected
+ *
+ * Dependencies:
+ * - DOM elements with IDs: `friend-selector`, `days`, `month-year`, `prev`, `next`
+ * - API endpoints: `/api/friend_calendar/{friendId}`, `/api/friend_calendar/{friendId}?date={dateStr}`
+ */
+
 document.addEventListener('DOMContentLoaded', function () {
   const friendSelector = document.getElementById('friend-selector');
   const daysContainer = document.getElementById('days');

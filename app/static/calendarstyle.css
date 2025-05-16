@@ -54,7 +54,11 @@
 
 /* Days Grid */
 .days {
-    height: 240px;
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: flex-start;
+    height: auto; 
+    gap: 0; 
 }
 
 .days div:hover, .days div:focus,
@@ -63,13 +67,16 @@
     color: rgb(212, 18, 18);
 }
 
+/* Day Cells */
 .days div {
-    width: 14.28%;
+    flex: 0 0 calc(100% / 7);
+    max-width: calc(100% / 7);
     text-align: center;
     padding: 10px 0;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease;
+    box-sizing: border-box; 
 }
 
 /* Day Cell Styling */
@@ -88,7 +95,6 @@
 }
 
 /* Event Card Styling */
-/* 日历下方事件卡片美化 */
 .event-card {
     background: linear-gradient(90deg, #f8ffae 0%, #43cea2 100%);
     color: #222;
@@ -108,7 +114,7 @@
     color: #3a3a3a;
 }
 
-/* 日历标题和 Create New Event 标题只换颜色不改字体 */
+/* Create New Event */
 .card-header.bg-white h5,
 .card-header.bg-primary h5,
 .card-header.bg-white .mb-0,
@@ -120,7 +126,6 @@
   color: transparent;
 }
 
-/* 日历标题和新建事件标题的背景美化 */
 .card-header.bg-primary {
   background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%) !important;
   color: #fff !important;
@@ -133,12 +138,12 @@
   border-bottom: 2px solid #43cea2;
 }
 
-/* 保证标题字体继承色彩 */
 .card-header h5,
 .card-header .mb-0 {
   color: inherit !important;
   background: none !important;
   -webkit-background-clip: unset !important;
+  background-clip: unset !important;
   -webkit-text-fill-color: unset !important;
 }
 
@@ -214,18 +219,7 @@ html, body {
   overflow-x: hidden;
 }
 
-.days {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.days div {
-  flex: 1 0 14.28%;
-  min-width: 0;
-  box-sizing: border-box;
-  /* Remove fixed width if any */
-}
-
+/* Dark Mode Styles */
 body.dark-mode {
   background: #181a1b !important;
   color: #e0e0e0;
@@ -233,7 +227,7 @@ body.dark-mode {
 body.dark-mode .card,
 body.dark-mode .section-card,
 body.dark-mode .help-section {
-  background: #23272b;
+  background:  #23272b;
   color: #e0e0e0;
   box-shadow: 0 4px 24px rgba(0,0,0,0.25);
 }
@@ -258,7 +252,6 @@ body.dark-mode .event-description {
   color: #fff !important;
 }
 
-/* 夜间模式下颜色适配 */
 body.dark-mode .card-header.bg-white h5,
 body.dark-mode .card-header.bg-primary h5,
 body.dark-mode .card-header.bg-white .mb-0,

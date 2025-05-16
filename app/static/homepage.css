@@ -2,7 +2,7 @@
 h5 {
   font-size: 2.5rem;
   font-weight: bold;
-  color: black; /* Green color */
+  color: black;
   text-align: center;
   margin-top: 20px;
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
@@ -150,31 +150,30 @@ nav {
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
-/* Introduction 区块 */
+/* Introduction */
 .section-card:nth-of-type(1) {
   background: linear-gradient(120deg, #f8ffae 0%, #e0eafc 100%);
   animation-delay: 0.2s;
 }
 
-/* Features 区块 */
+/* Features */
 .section-card:nth-of-type(2) {
   background: linear-gradient(120deg, #e0c3fc 0%, #f5f7fa 100%);
   animation-delay: 0.6s;
 }
 
-/* About 区块 */
+/* About */
 .section-card:nth-of-type(3) {
   background: linear-gradient(120deg, #f093fb 0%, #f5f7fa 100%);
   animation-delay: 1.0s;
 }
 
-/* Contact 区块 */
+/* Contact */
 .section-card:nth-of-type(4) {
   background: linear-gradient(120deg, #43e97b 0%, #e0eafc 100%);
   animation-delay: 1.4s;
 }
 
-/* 夜间模式下内容框 */
 body.dark-mode .section-card {
   background: rgba(35, 39, 43, 0.92) !important;
   color: #e0e0e0 !important;
@@ -246,10 +245,8 @@ body.dark-mode .section-card {
   flex: 1 0 14.28%;
   min-width: 0;
   box-sizing: border-box;
-  /* Remove fixed width if any */
 }
 
-/* 主标题框背景 */
 .header-main-title {
   background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
   color: #fff;

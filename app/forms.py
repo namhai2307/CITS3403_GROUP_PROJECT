@@ -175,7 +175,6 @@ class EventForm(FlaskForm):
         choices=[
             ('private', 'Private'),
             ('friends', 'Friends'),
-            ('specific_users', 'Specific Users')
         ],
         validators=[DataRequired()]
     )

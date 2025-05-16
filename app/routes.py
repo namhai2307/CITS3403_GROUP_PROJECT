@@ -334,7 +334,9 @@ def visualisation():
     Render the visualisation page.
     Displays a list of friends and their calendar event durations.
     """
-    friends = User.query.filter(User.id != current_user.id).all()  
+    friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
+    friends = [User.query.get(f.friend_id) for f in friendships]
+
     return render_template('visualisation.html', friends=friends, event_durations={})
 
 @main.route('/api/friend_calendar/<int:friend_id>')

@@ -99,6 +99,7 @@ def profile():
     pending_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
     pending_pairs = [(req, User.query.get(req.user_id)) for req in pending_requests]
 
+
     if request.method == 'POST':
         search_query = request.form.get('search_query', '').strip()
         if search_query:
@@ -119,7 +120,7 @@ def profile():
             pending_requests=pending_requests,
             pending_pairs=pending_pairs
         )
-    
+
 @main.route('/search_users', methods=['POST'])
 def search_users():
     """

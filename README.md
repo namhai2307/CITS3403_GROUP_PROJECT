@@ -31,12 +31,12 @@ Use our analytical tools to track when you are most busy across the week to plan
 2. **Create a Virtual Environment**
    **For MacOS/Linux:**
    ```bash
-   python3 -m venv venv 
+   python -m venv venv 
    source venv/bin/activate
    ```
    **For Windows:**
    ```bash
-   python3 -m venv venv 
+   python -m venv venv 
    .\venv\Scripts\Activate.ps1
    ```
    Once activated the terminal prompt should shoul (venv).

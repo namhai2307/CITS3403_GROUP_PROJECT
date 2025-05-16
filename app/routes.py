@@ -294,6 +294,31 @@ def delete_event(event_id):
     db.session.commit()
     return jsonify({'status': 'deleted'})
 
+@main.route('/api/event_durations')
+@login_required
+def api_event_durations():
+    today = datetime.utcnow().date()
+    start_of_month = datetime(today.year, today.month, 1)
+    if today.month == 12:
+        end_of_month = datetime(today.year + 1, 1, 1) - timedelta(seconds=1)
+    else:
+        end_of_month = datetime(today.year, today.month + 1, 1) - timedelta(seconds=1)
+
+    events = Event.query.filter(
+        Event.user_id == current_user.id,
+        Event.start_time >= start_of_month,
+        Event.start_time <= end_of_month
+    ).all()
+
+    event_durations = {}
+    for event in events:
+        day = event.start_time.strftime('%Y-%m-%d')
+        duration = (event.end_time - event.start_time).total_seconds() / 3600
+        event_durations[day] = event_durations.get(day, 0) + duration
+
+    return jsonify(event_durations)
+
+
 @main.route('/help')
 def help():
     """

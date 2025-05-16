@@ -88,13 +88,58 @@
 }
 
 /* Event Card Styling */
+/* 日历下方事件卡片美化 */
 .event-card {
-    background-color: white;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    color: black;
+    background: linear-gradient(90deg, #f8ffae 0%, #43cea2 100%);
+    color: #222;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(67,206,162,0.08);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.event-card:hover {
+    box-shadow: 0 6px 24px rgba(67,206,162,0.18);
+    transform: translateY(-2px) scale(1.01);
+}
+.event-title {
+    color: #2d3a4a;
+}
+.event-description {
+    color: #3a3a3a;
+}
+
+/* 日历标题和 Create New Event 标题只换颜色不改字体 */
+.card-header.bg-white h5,
+.card-header.bg-primary h5,
+.card-header.bg-white .mb-0,
+.card-header.bg-primary .mb-0 {
+  background: linear-gradient(90deg, #6a0572 0%, #a83279 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 日历标题和新建事件标题的背景美化 */
+.card-header.bg-primary {
+  background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%) !important;
+  color: #fff !important;
+  border-bottom: 2px solid #fc5c7d;
+}
+
+.card-header.bg-white {
+  background: linear-gradient(90deg, #f8ffae 0%, #43cea2 100%) !important;
+  color: #2d3a4a !important;
+  border-bottom: 2px solid #43cea2;
+}
+
+/* 保证标题字体继承色彩 */
+.card-header h5,
+.card-header .mb-0 {
+  color: inherit !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
 }
 
 /* Responsive Design */
@@ -113,5 +158,127 @@
         margin-top: 15px;
     }
 }
+
+/* Responsive calendar grid */
+@media (max-width: 992px) {
+  .calendar-container {
+    padding: 10px;
+    max-width: 100%;
+  }
+  .calendar-grid {
+    margin-bottom: 10px;
+  }
+  .days div {
+    padding: 6px 0;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .weekdays div,
+  .days div {
+    font-size: 0.8rem;
+    padding: 4px 0;
+  }
+  .calendar-grid {
+    margin-bottom: 5px;
+  }
+  .days {
+    height: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .calendar-container {
+    padding: 2px;
+  }
+  .weekdays div,
+  .days div {
+    font-size: 0.7rem;
+    padding: 2px 0;
+  }
+}
+
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.container,
+.container-fluid,
+.row,
+.card,
+.calendar-container {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.days {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.days div {
+  flex: 1 0 14.28%;
+  min-width: 0;
+  box-sizing: border-box;
+  /* Remove fixed width if any */
+}
+
+body.dark-mode {
+  background: #181a1b !important;
+  color: #e0e0e0;
+}
+body.dark-mode .card,
+body.dark-mode .section-card,
+body.dark-mode .help-section {
+  background: #23272b;
+  color: #e0e0e0;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+body.dark-mode .btn-outline-primary {
+  background: #23272b;
+  color: #fff !important;
+  border: 1px solid #444;
+}
+body.dark-mode nav {
+  background: #23272b;
+}
+body.dark-mode .event-card {
+  background: linear-gradient(90deg, #23272b 0%, #43cea2 100%) !important;
+  color: #a3bffa !important;
+  border: 1px solid #43cea2 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+}
+body.dark-mode .event-title {
+  color: #a3bffa !important;
+}
+body.dark-mode .event-description {
+  color: #fff !important;
+}
+
+/* 夜间模式下颜色适配 */
+body.dark-mode .card-header.bg-white h5,
+body.dark-mode .card-header.bg-primary h5,
+body.dark-mode .card-header.bg-white .mb-0,
+body.dark-mode .card-header.bg-primary .mb-0 {
+  color: #a3bffa;
+}
+body.dark-mode .card-header.bg-primary h5,
+body.dark-mode .card-header.bg-primary .mb-0 {
+  color: #ffb3c6;
+}
+body.dark-mode .card-header.bg-primary {
+  background: linear-gradient(90deg, #23272b 0%, #6a82fb 100%) !important;
+  color: #fff !important;
+  border-bottom: 2px solid #6a82fb;
+}
+body.dark-mode .card-header.bg-white {
+  background: linear-gradient(90deg, #23272b 0%, #43cea2 100%) !important;
+  color: #a3bffa !important;
+  border-bottom: 2px solid #43cea2;
+}
+
 
 

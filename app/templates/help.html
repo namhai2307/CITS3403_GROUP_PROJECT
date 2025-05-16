@@ -5,55 +5,57 @@
 {% endblock %}
 
 {% block content %}
-  <aside class="sidebar">
+<div class="container help-container">
+  <!-- 左侧导航 -->
+  <aside class="help-sidebar">
     <nav>
-        <ul style="list-style-type: square;">
-            <li> <a href="#makeAcount">Making Your Account</a> </li>
+        <ul>
+            <li> <a href="#makeAcount" class="active">Making Your Account</a> </li>
             <li> <a href="#changeDetails">Changing Your Details</a> </li>
             <li> <a href="#addEvent">Adding an Event</a> </li>
             <li> <a href="#graphFunc">Using the Frequency Calculator</a> </li>
             <li> <a href="#addFriend">Adding a Contact</a> </li>
             <li> <a href="#createGroup">Creating a Sharegroup</a> </li>
             <li> <a href="#setTime">Using the "Find a Time" Function</a> </li>
-            <li> <a href="">Top of Page</a> </li>
+            <li> <a href="#">Top of Page</a> </li>
         </ul>
     </nav>
   </aside>
-  <div class="main-content">
-    <section id="makeAcount">
+  <div class="help-main-content">
+    <section id="makeAcount" class="help-section">
       <h2>Making Your Account</h2>
-      <p>You password is required to meet each of the following conditions:
-        <ul style="list-style-type: square;"> 
-          <li> Be between 12 to 128 characters in length. </li>
-          <li> Contain at least one lowercase letter. </li>
-          <li> Contain at least one uppercase letter. </li>
-          <li> Contain at least one number. </li>
-        </ul>
-      </p>
+      <ul style="list-style-type: square;">
+        <li> Be between 12 to 128 characters in length. </li>
+        <li> Contain at least one lowercase letter. </li>
+        <li> Contain at least one uppercase letter. </li>
+        <li> Contain at least one number. </li>
+      </ul>
     </section>
-    <section id="changeDetails">
+    <section id="changeDetails" class="help-section">
       <h2>Changing Your Details</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie urna ac nibh malesuada facilisis. Mauris pulvinar condimentum ex. Praesent bibendum lacus eget pretium cursus. Sed a commodo arcu. Quisque pretium turpis ac lectus aliquet, sed semper neque rutrum. Nunc scelerisque venenatis nibh in pellentesque. Nullam at mauris nisl. Vivamus elementum iaculis lacinia. Donec a rhoncus tellus, ut lacinia risus. Aliquam erat volutpat.</p>
     </section>
-    <section id="addEvent">
+    <section id="addEvent" class="help-section">
       <h2>Adding An Event</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie urna ac nibh malesuada facilisis. Mauris pulvinar condimentum ex. Praesent bibendum lacus eget pretium cursus. Sed a commodo arcu. Quisque pretium turpis ac lectus aliquet, sed semper neque rutrum. Nunc scelerisque venenatis nibh in pellentesque. Nullam at mauris nisl. Vivamus elementum iaculis lacinia. Donec a rhoncus tellus, ut lacinia risus. Aliquam erat volutpat.</p>
     </section>
-    <section id="graphFunc">
+    <section id="graphFunc" class="help-section">
       <h2>Using the Frequency Calculator</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie urna ac nibh malesuada facilisis. Mauris pulvinar condimentum ex. Praesent bibendum lacus eget pretium cursus. Sed a commodo arcu. Quisque pretium turpis ac lectus aliquet, sed semper neque rutrum. Nunc scelerisque venenatis nibh in pellentesque. Nullam at mauris nisl. Vivamus elementum iaculis lacinia. Donec a rhoncus tellus, ut lacinia risus. Aliquam erat volutpat.</p>
     </section>
-    <section id="addFriend">
+    <section id="addFriend" class="help-section">
       <h2>Adding A Contact</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie urna ac nibh malesuada facilisis. Mauris pulvinar condimentum ex. Praesent bibendum lacus eget pretium cursus. Sed a commodo arcu. Quisque pretium turpis ac lectus aliquet, sed semper neque rutrum. Nunc scelerisque venenatis nibh in pellentesque. Nullam at mauris nisl. Vivamus elementum iaculis lacinia. Donec a rhoncus tellus, ut lacinia risus. Aliquam erat volutpat.</p>
     </section>
-    <section id="createGroup">
+    <section id="createGroup" class="help-section">
       <h2>Creating a Sharegroup</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie urna ac nibh malesuada facilisis. Mauris pulvinar condimentum ex. Praesent bibendum lacus eget pretium cursus. Sed a commodo arcu. Quisque pretium turpis ac lectus aliquet, sed semper neque rutrum. Nunc scelerisque venenatis nibh in pellentesque. Nullam at mauris nisl. Vivamus elementum iaculis lacinia. Donec a rhoncus tellus, ut lacinia risus. Aliquam erat volutpat.</p>
     </section>
-    <section id="setTime">
+    <section id="setTime" class="help-section">
       <h2>Using the "Find a Time" Function</h2>
       <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer molestie urna ac nibh malesuada facilisis. Mauris pulvinar condimentum ex. Praesent bibendum lacus eget pretium cursus. Sed a commodo arcu. Quisque pretium turpis ac lectus aliquet, sed semper neque rutrum. Nunc scelerisque venenatis nibh in pellentesque. Nullam at mauris nisl. Vivamus elementum iaculis lacinia. Donec a rhoncus tellus, ut lacinia risus. Aliquam erat volutpat.</p>
     </section>
   </div>
+</div>
+
 {% endblock %}

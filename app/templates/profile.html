@@ -12,7 +12,8 @@
             <h2 class="text-center">Update Your Details</h2>
             <div class="d-flex flex-row">
                 <!-- Change Password -->
-                <div class="form-box" action="password" id="changePassword">
+                <div class="form-box" id="changePassword">
+                    <!-- <form action="{{ url_for('main.profile') }}" method="POST" id="changePassword"> -->
                     <form>
                         <h3 class="text-center mb-4">Change Your Password</h3>
                         <input type="password" id="oldPassword" name="oldPassword" class="input" placeholder="Current Password" required>
@@ -23,7 +24,8 @@
                 </div>
 
                 <!-- Change Email -->
-                <div class="form-box" action="email" id="updateEmail">
+                <div class="form-box" id="updateEmail">
+                    <!-- <form action="{{ url_for('main.profile') }}" method="POST" id="changeEmail"> -->
                     <form>
                         <h3 class="text-center mb-4">Change Your Email</h3>
                         <input type="password" id="password" name="password" class="input" placeholder="Confirm Password" required>
@@ -45,7 +47,7 @@
     
             <!-- Friend Search Form -->
             <div class="form-box" id="find-friend">
-                <form action="{{ url_for('main.profile') }}" method="POST">
+                <form action="{{ url_for('main.profile') }}" method="POST" id="find-friend">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <h3 class="text-center mb-4">Find Your Friends</h3>
                     <input type="text" id="search-input" name="search_query" class="input" placeholder="Enter your friend's username" required>

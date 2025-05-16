@@ -101,18 +101,19 @@ def profile():
     pending_pairs = [(req, User.query.get(req.user_id)) for req in pending_requests]
 
     # ...existing search logic...
-    if request.method == 'POST':
-        search_query = request.form.get('search_query', '').strip()
-        if search_query:
-            users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
-            return render_template(
-                'profile.html',
-                users=users[:4],
-                search_query=search_query,
-                friends=friends,
-                pending_requests=pending_requests,
-                pending_pairs=pending_pairs
-            )
+    if request.form.id == 'friendSearch':
+        if request.method == 'POST':
+            search_query = request.form.get('search_query', '').strip()
+            if search_query:
+                users = User.query.filter(User.username.ilike(f'%{search_query}%')).all()
+                return render_template(
+                    'profile.html',
+                    users=users[:4],
+                    search_query=search_query,
+                    friends=friends,
+                    pending_requests=pending_requests,
+                    pending_pairs=pending_pairs
+                )
     else:
         return render_template(
             'profile.html',
@@ -121,7 +122,7 @@ def profile():
             pending_requests=pending_requests,
             pending_pairs=pending_pairs
         )
-    
+
 @main.route('/search_users', methods=['POST'])
 def search_users():
     """

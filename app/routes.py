@@ -93,16 +93,12 @@ def signup():
 @main.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
-    # Friends (accepted)
     friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
     friends = [User.query.get(f.friend_id) for f in friendships]
 
-
-    # Pending requests received (where current user is the recipient)
     pending_requests = Friendship.query.filter_by(friend_id=current_user.id, status='pending').all()
     pending_pairs = [(req, User.query.get(req.user_id)) for req in pending_requests]
 
-    # ...existing search logic...
     if request.method == 'POST':
         search_query = request.form.get('search_query', '').strip()
         if search_query:
@@ -162,7 +158,7 @@ def dashboard():
     try:
         display_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.utcnow().date()
     except ValueError:
-        display_date = datetime.utcnow().date()
+        display_date = datetime.now().date()
 
     if form.validate_on_submit():
         try:
@@ -174,8 +170,7 @@ def dashboard():
                 
                 privacy_level=form.privacy_level.data,  
                 user_id= current_user.id,
-                created_by=current_user.id  # New: Set Creator
-
+                created_by=current_user.id  
             )
             db.session.add(event)
             db.session.commit()
@@ -220,16 +215,17 @@ def dashboard():
         events=daily_events,
         display_date=display_date,
       
-        event_durations=event_durations,  # Pass durations instead of counts
+        event_durations=event_durations, 
         timedelta=timedelta  ,
-        current_user_id= current_user.id  #New: Transfer the current user ID to the template
-
+        current_user_id= current_user.id  
     )
 
 @main.route('/api/events/<date>', methods=['GET'])
 @login_required
 def get_events_by_date(date):
-    """Retrieve the event list for the specified date"""
+    """
+    Retrieve the event list for the specified date.
+    """
     try:
         date_obj = datetime.strptime(date, '%Y-%m-%d')
         start_of_day = datetime.combine(date_obj, datetime.min.time())
@@ -238,8 +234,7 @@ def get_events_by_date(date):
         events = Event.query.filter(
             Event.start_time >= start_of_day,
             Event.start_time <= end_of_day,
-            
-            Event.user_id == current_user.id  # Only return events for the current user
+            Event.user_id == current_user.id 
         ).order_by(Event.start_time).all()
         
         return jsonify([{
@@ -257,13 +252,16 @@ def get_events_by_date(date):
 @main.route('/api/events/<int:event_id>', methods=['PUT'])
 @login_required
 def update_event(event_id):
+    """
+    Update an event by its ID. 
+    Only the user who created the event can update it.
+    """
     event = Event.query.get_or_404(event_id)
     if event.created_by != current_user.id:  
         abort(403)
     
     data = request.get_json()  
     print("Received data:", data)  
-    
     
     if 'title' in data:
         event.title = data['title']
@@ -282,6 +280,10 @@ def update_event(event_id):
 @main.route('/api/events/<int:event_id>', methods=['DELETE'])
 @login_required
 def delete_event(event_id):
+    """
+    Delete an event by its ID.
+    Only the user who created the event can delete it.
+    """
     event = Event.query.get_or_404(event_id)
     if event.created_by != current_user.id:
         print(f"Permission denied: User {current_user.id} tried to delete event {event_id} created by {event.created_by}")
@@ -292,11 +294,35 @@ def delete_event(event_id):
     db.session.commit()
     return jsonify({'status': 'deleted'})
 
+@main.route('/api/event_durations')
+@login_required
+def api_event_durations():
+    today = datetime.utcnow().date()
+    start_of_month = datetime(today.year, today.month, 1)
+    if today.month == 12:
+        end_of_month = datetime(today.year + 1, 1, 1) - timedelta(seconds=1)
+    else:
+        end_of_month = datetime(today.year, today.month + 1, 1) - timedelta(seconds=1)
+
+    events = Event.query.filter(
+        Event.user_id == current_user.id,
+        Event.start_time >= start_of_month,
+        Event.start_time <= end_of_month
+    ).all()
+
+    event_durations = {}
+    for event in events:
+        day = event.start_time.strftime('%Y-%m-%d')
+        duration = (event.end_time - event.start_time).total_seconds() / 3600
+        event_durations[day] = event_durations.get(day, 0) + duration
+
+    return jsonify(event_durations)
+
+
 @main.route('/help')
 def help():
     """
     Render the help page.
-
     For users to find assistance and information about the how to get started with calendar web app.
     """
     return render_template('help.html')
@@ -306,7 +332,6 @@ def help():
 def visualisation():
     """
     Render the visualisation page.
-
     Displays a list of friends and their calendar event durations.
     """
     friends = User.query.filter(User.id != current_user.id).all()  
@@ -321,7 +346,6 @@ def friend_calendar(friend_id):
     """
     friend = User.query.get_or_404(friend_id)
 
-    # 热力图数据
     start_of_month = datetime.now().replace(day=1)
     end_of_month = (start_of_month + timedelta(days=31)).replace(day=1) - timedelta(seconds=1)
 
@@ -338,7 +362,6 @@ def friend_calendar(friend_id):
         duration = (event.end_time - event.start_time).total_seconds() / 3600
         event_durations[day] = event_durations.get(day, 0) + duration
 
-    # 如果有 date 参数，返回当天事件
     date_str = request.args.get('date')
     events_data = []
     if date_str:
@@ -371,7 +394,6 @@ def friend_calendar(friend_id):
 def get_events():
     """
     API endpoint to retrieve events for a specific date.
-
     Returns a JSON response with event details for the selected date.
     """
     date_str = request.args.get('date')
@@ -404,10 +426,12 @@ def get_events():
 
     return jsonify({'events': events_data})
 
-#Add friend section
 @main.route('/add_friend', methods=['POST'])
 @login_required
 def add_friend():
+    """
+    Adding a friend request to another user.
+    """
     friend_id = request.form.get('friend_id')
     if friend_id and int(friend_id) != current_user.id:
         existing = Friendship.query.filter_by(user_id=current_user.id, friend_id=friend_id).first()
@@ -425,10 +449,12 @@ def add_friend():
 @main.route('/accept_friend/<int:friendship_id>', methods=['POST'])
 @login_required
 def accept_friend(friendship_id):
+    """
+    Accept a friend request from another user.
+    """
     friendship = Friendship.query.get_or_404(friendship_id)
     if friendship.friend_id == current_user.id and friendship.status == 'pending':
         friendship.status = 'accepted'
-        # Make it mutual
         mutual = Friendship(user_id=current_user.id, friend_id=friendship.user_id, status='accepted')
         db.session.add(mutual)
         db.session.commit()
@@ -440,6 +466,9 @@ def accept_friend(friendship_id):
 @main.route('/delete_friend_request/<int:friendship_id>', methods=['POST'])
 @login_required
 def delete_friend_request(friendship_id):
+    """
+    Delete a friend request that was previously sent out by user.
+    """
     friendship = Friendship.query.get_or_404(friendship_id)
     if friendship.friend_id == current_user.id and friendship.status == 'pending':
         db.session.delete(friendship)
@@ -456,13 +485,11 @@ def chat():
     """
     Render the chat page.
     """
-    # Get the list of friends
     friendships = Friendship.query.filter_by(user_id=current_user.id, status='accepted').all()
     friends = [User.query.get(f.friend_id) for f in friendships]
 
     return render_template('chat.html', username=current_user.username, friends=friends)
 
-# SocketIO Events
 @socketio.on('send_message')
 def handle_send_message(data):
     """
@@ -472,15 +499,12 @@ def handle_send_message(data):
     message_content = data['message']
     username = data['username']
 
-    # Get the sender
     sender = User.query.filter_by(username=username).first()
     if not sender:
-        return  # Invalid sender
+        return  
 
-    # Get the recipient ID from the room name (e.g., "room_<recipient_id>")
     recipient_id = int(room.split('_')[1])
 
-    # Store the message in the database
     message = Message(
         sender_id=sender.id,
         recipient_id=recipient_id,
@@ -489,8 +513,14 @@ def handle_send_message(data):
     db.session.add(message)
     db.session.commit()
 
-    # Broadcast the message to the room
-    emit('receive_message', {'username': username, 'message': message_content}, room=room)
+    emit('receive_message', {
+        "sender_id": message.sender_id,
+        "sender_username": message.sender.username,
+        "recipient_id": message.recipient_id,
+        "recipient_username": message.recipient.username,
+        "message": message.content,
+        "timestamp": message.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    }, room=room)
 
 @socketio.on('join_room')
 def handle_join_room(data):
@@ -501,14 +531,10 @@ def handle_join_room(data):
     username = data['username']
     join_room(room)
 
-    # Retrieve chat history for the room
     messages = Message.query.filter_by(room=room).order_by(Message.timestamp).all()
     chat_history = [{'username': msg.sender.username, 'message': msg.content, 'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')} for msg in messages]
 
-    # Send chat history to the user
     emit('chat_history', chat_history, to=request.sid)
-
-    # Notify others in the room
     emit('user_joined', {'username': username}, room=room)
 
 @socketio.on('leave_room')
@@ -529,26 +555,30 @@ from . import db
 @login_required
 def send_message():
     """
-    Send a message to a friend.
+    Sends messages between the current user and a friend.
     """
-    data = request.json
+    data = request.get_json()
     recipient_id = data.get('recipient_id')
     content = data.get('content')
 
-    if not recipient_id or not content:
-        return jsonify({'error': 'Recipient and content are required'}), 400
-
-    # Ensure the recipient is a friend
-    recipient = User.query.get(recipient_id)
-    if not recipient:
-        return jsonify({'error': 'Recipient not found'}), 404
-
-    # Create and store the message
-    message = Message(sender_id=current_user.id, recipient_id=recipient_id, content=content)
+    message = Message(
+        sender_id=current_user.id,
+        recipient_id=recipient_id,
+        content=content
+    )
     db.session.add(message)
     db.session.commit()
 
-    return jsonify({'success': 'Message sent'}), 200
+    socketio.emit('receive_message', {
+        "sender_id": message.sender_id,
+        "sender_username": message.sender.username,
+        "recipient_id": message.recipient_id,
+        "recipient_username": message.recipient.username,
+        "message": message.content,
+        "timestamp": message.timestamp.strftime('%Y-%m-%d %H:%M:%S')
+    }, room=f"room_{recipient_id}")
+
+    return jsonify({"success": True})
 
 @main.route('/messages/<int:friend_id>', methods=['GET'])
 @login_required
@@ -556,29 +586,27 @@ def get_messages(friend_id):
     """
     Fetch messages between the current user and a friend.
     """
-    # Ensure the friend is valid
     friend = User.query.get(friend_id)
     if not friend:
         return jsonify({'error': 'Friend not found'}), 404
 
-    # Fetch messages between the current user and the friend
     messages = Message.query.filter(
         ((Message.sender_id == current_user.id) & (Message.recipient_id == friend_id)) |
         ((Message.sender_id == friend_id) & (Message.recipient_id == current_user.id))
     ).order_by(Message.timestamp).all()
 
-    # Format the messages for the response
     messages_data = [
         {
             'id': message.id,
             'sender_id': message.sender_id,
+            'sender_username': message.sender.username,
             'recipient_id': message.recipient_id,
+            'recipient_username': message.recipient.username,
             'content': message.content,
             'timestamp': message.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
-            'read': message.read,
-            'sender_username': message.sender.username
         }
         for message in messages
     ]
 
-    return jsonify(messages_data), 200
+    return jsonify(messages_data)
+

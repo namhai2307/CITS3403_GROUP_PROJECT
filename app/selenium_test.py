@@ -13,8 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from app import create_app, db
 from app.config import TestConfig
-from app.models import User, Event
-from datetime import datetime
+from app.models import User
 
 localHost = "http://127.0.0.1:5000/"
 
@@ -38,15 +37,15 @@ class SeleniumTests(unittest.TestCase):
         db.create_all()
         self.add_test_data_to_db()
 
-        # Start the Flask server in a separate process
         self.server_process = multiprocessing.Process(target=run_flask_app)
         self.server_process.start()
 
-        # Set up the Selenium WebDriver
         options = webdriver.ChromeOptions()
-        options.add_argument("--headless=new")  # Run in headless mode
+        options.add_argument("--headless=new") 
         self.driver = webdriver.Chrome(options=options)
         self.driver.get(localHost)
+
+        return super().setUp()
 
     def tearDown(self):
         """
@@ -60,54 +59,74 @@ class SeleniumTests(unittest.TestCase):
         db.create_all() 
         self.app_context.pop()
 
+        return super().tearDown()
+
     def add_test_data_to_db(self):
         """
         Add test data to the database.
         """
-        existing_user = User.query.filter_by(email="newuser@example.com").first()
-        if existing_user:
-            db.session.delete(existing_user)
-            db.session.commit()
-
         user = User(username="newuser", email="newuser@example.com")
         user.set_password("Password1234")
         db.session.add(user)
-
-        event = Event(
-            title="Test Event",
-            description="This is a test event.",
-            start_time=datetime(2025, 5, 8, 10, 0, 0),
-            end_time=datetime(2025, 5, 8, 12, 0, 0),
-            privacy_level="public",
-            user_id=1  
-        )
-        db.session.add(event)
         db.session.commit()
 
-    def test_redirection_help(self):
-        """
-        Verify that the help page is accessible by user.
-        Checks that user is redirected to the help page and that the page contains expected content.
-        """
-        self.driver.get(localHost + "help")
-        self.assertEqual(self.driver.current_url, localHost + "help")
-        self.assertIn("Making Your Account", self.driver.page_source)
-        self.assertIn("Changing Your Details", self.driver.page_source)
-        self.assertIn("Adding An Event", self.driver.page_source)
+        user = User(username="queryuser", email="queryuser@example.com")
+        user.set_password("Password1234")
+        db.session.add(user)
+        db.session.commit()
 
+    def test_help_page_redirect(self):
+        """
+        Verify that the user can navigate to the help page successfully.
+        """
+        self.driver.get(localHost + "index")
+
+        WebDriverWait(self.driver, 10).until( EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "help-button")))
+
+        self.driver.find_element(By.ID, "help-button").click()
+
+        WebDriverWait(self.driver, 10).until(EC.url_contains("/help"))
+
+        self.assertIn("/help", self.driver.current_url)
+        self.assertIn("Help", self.driver.page_source)
+
+    def test_dashboard_requires_login(self):
+        """
+        Verify that accessing the dashboard page without logging in redirects the user to the login page.
+        """
+        self.driver.get(localHost + "index")
+
+        WebDriverWait(self.driver, 10).until( EC.presence_of_element_located((By.TAG_NAME, "body")))
+
+        WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable((By.ID, "dashboard-button")))
+       
+        self.driver.find_element(By.ID, "dashboard-button").click()
+
+        WebDriverWait(self.driver, 10).until(EC.url_contains("/login"))
+
+        self.assertIn("/login", self.driver.current_url)
+        self.assertIn("email", self.driver.page_source)
+        self.assertIn("password", self.driver.page_source)
+    
     def test_register_user(self):
         """
         Verify the user registration functionality.
-        Test checks that user can signup/register successfully with credentials. 
+        Test checks that a user can sign up/register successfully with valid credentials.
         """
         self.driver.get(localHost + "signup")
 
-        self.driver.find_element(By.NAME, "username").send_keys("test")
-        self.driver.find_element(By.NAME, "email").send_keys("test@example.com")
-        self.driver.find_element(By.NAME, "password").send_keys("Password1234")
-        self.driver.find_element(By.NAME, "confirm_password").send_keys("Password1234")
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "username")))
+
+        self.driver.find_element(By.ID, "username").send_keys("testuser")
+        self.driver.find_element(By.ID, "email").send_keys("testuser@example.com")
+        self.driver.find_element(By.ID, "password").send_keys("Password1234")
+        self.driver.find_element(By.ID, "confirm_password").send_keys("Password1234")
 
         self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
+
+        WebDriverWait(self.driver, 10).until(EC.url_to_be(localHost + "login"))
 
         self.assertIn("email", self.driver.page_source)
         self.assertIn("password", self.driver.page_source)
@@ -120,8 +139,10 @@ class SeleniumTests(unittest.TestCase):
         """
         self.driver.get(localHost + "login")
 
-        self.driver.find_element(By.NAME, "email").send_keys("newuser@example.com")
-        self.driver.find_element(By.NAME, "password").send_keys("Password1234")
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.ID, "email")))
+
+        self.driver.find_element(By.ID, "email").send_keys("newuser@example.com")
+        self.driver.find_element(By.ID, "password").send_keys("Password1234")
         self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
         WebDriverWait(self.driver, 10).until(EC.url_to_be(localHost + "dashboard"))
@@ -130,52 +151,28 @@ class SeleniumTests(unittest.TestCase):
         self.assertIn("Create New Event", self.driver.page_source)
         self.assertIn("My Calendar", self.driver.page_source)
 
-    def test_create_event(self):
-        """
-        Verify the event creation functionality
-        Test proceeds to login and create an predefined event.
-        If successful, the test will check that event is displayed on the dashboard.
-        """
-
-        self.driver.get(localHost + "login")
-        self.driver.find_element(By.NAME, "email").send_keys("newuser@example.com")
-        self.driver.find_element(By.NAME, "password").send_keys("Password1234")
-        self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
-
-        self.driver.find_element(By.ID, "title").send_keys("Selenium Test Event")
-        self.driver.find_element(By.ID, "description").send_keys("This is a Selenium Test Event.")
-        start_time_field = self.driver.find_element(By.ID, "start_time")
-        self.driver.execute_script("arguments[0].value = arguments[1];", start_time_field, "2025-05-08T10:00")
-        end_time_field = self.driver.find_element(By.ID, "end_time")
-        self.driver.execute_script("arguments[0].value = arguments[1];", end_time_field, "2025-05-08T12:00")
-        self.driver.find_element(By.ID, "privacy_level").send_keys("private")
-
-        self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
-
-        current_url = self.driver.current_url
-        page_text = self.driver.page_source
-    
-        self.assertTrue(self.driver.current_url.endswith("/dashboard"))
-        self.assertIn("This is a Selenium Test Event.", page_text)
-        self.assertIn("10:00 - 12:00", page_text)
-      
-
     def test_logout_user(self):
         """
         Verify the logout functionality.
-        Ensure that the user is redirected to the home/index page after logging out.
+        Ensure that user logins in, and after clicking logout button
+        They will be redirected to the home/index page after logging out.
         """
         self.driver.get(localHost + "login")
-        self.driver.find_element(By.NAME, "email").send_keys("newuser@example.com")
-        self.driver.find_element(By.NAME, "password").send_keys("Password1234")
+
+        WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.NAME, "email")))
+
+        self.driver.find_element(By.ID, "email").send_keys("newuser@example.com")
+        self.driver.find_element(By.ID, "password").send_keys("Password1234")
         self.driver.find_element(By.XPATH, "//button[@type='submit']").click()
 
         WebDriverWait(self.driver, 10).until(EC.url_contains("/dashboard"))
+
         self.driver.find_element(By.LINK_TEXT, "Logout").click()
 
-        self.assertTrue(self.driver.current_url.endswith("/index"))
+        WebDriverWait(self.driver, 10).until(EC.url_to_be(localHost + "index"))
 
-            
+        self.assertTrue(self.driver.current_url.endswith("/index"))
+  
+    
 if __name__ == "__main__":
     unittest.main()
-

@@ -1,9 +1,26 @@
+/**
+ * @fileoverview Friend search functionality using AJAX.
+ *
+ * This script handles user-initiated friend searches via a button click.
+ * It sends the search query to a backend endpoint using a POST request,
+ * receives a list of matching users, and dynamically renders user "friend cards"
+ * into the DOM. If no users are found, it displays an appropriate message.
+ *
+ * Features:
+ * - Fetch-based AJAX request with JSON payload
+ * - Dynamic DOM manipulation based on server response
+ * - Graceful handling of empty results and errors
+ *
+ * Dependencies:
+ * - Assumes presence of elements with IDs: 'search-button', 'search-input', 'friend-container'
+ * - Uses Bootstrap classes for styling (e.g. 'btn', 'text-center')
+ *
+*/
+
 document.getElementById('search-button').addEventListener('click', function () {
     const searchQuery = document.getElementById('search-input').value.trim();
-    const searchUrl = this.getAttribute('data-search-url'); // Get the URL from the data attribute
-    // Make sure the input is not blank before hitting the search button
+    const searchUrl = this.getAttribute('data-search-url'); 
     if (searchQuery) {
-        // send POST request to the server
         fetch(searchUrl, {
             method: 'POST',
             headers: {
@@ -15,7 +32,7 @@ document.getElementById('search-button').addEventListener('click', function () {
         .then(response => response.json())
         .then(data => {
             const friendContainer = document.getElementById('friend-container');
-            friendContainer.innerHTML = ''; // Clear previous results
+            friendContainer.innerHTML = ''; 
 
             if (data.length > 0) {
                 data.forEach(user => {

@@ -6,7 +6,6 @@
 
 {% block content %}
 <div class="container help-container">
-  <!-- 左侧导航 -->
   <aside class="help-sidebar">
     <nav>
         <ul>
@@ -14,8 +13,10 @@
             <li> <a href="#changeDetails">Changing Your Details</a> </li>
             <li> <a href="#addEvent">Adding an Event</a> </li>
             <li> <a href="#editEvent">Editing an Event</a> </li>
-            <li> <a href="#colourVis">Why is my Calendar Red?</a> </li>
+            <li> <a href="#colourVis">What Does the Colour Mean</a> </li>
             <li> <a href="#addFriend">Adding a Contact</a> </li>
+            <li> <a href="#chat">Using Chat</a> </li>
+            <li> <a href="#friendCal">Viewing a Friend's Calendar</a> </li>
             <li> <a href="#createGroup">Creating a Sharegroup</a> </li>
             <li> <a href="#setTime">Using the "Find a Time" Function</a> </li>
             <li> <a href="#">Top of Page</a> </li>
@@ -43,7 +44,7 @@
 
     <section id="changeDetails" class="help-section">
       <h2>Changing Your Details</h2>
-      <p><b>This function is not yet implemented.</b></p>
+      <p>In the <a href='/profile'>Profile</a> page you can update your password or your registered email by completing the appropriate form at the top of the page. To complete either action you will need to verify your current password, to make sure someone else isn't taking advantage of your device being open and unattended.</p>
     </section>
 
     <section id="addEvent" class="help-section">
@@ -64,15 +65,13 @@
       <h2>Editing an Event</h2>
       <p> After creating a new event, events on the day you currently have selected in the calendar will gain a button to either "Edit" or "Delete" the event. <br>
       "Edit" will open a window within the app to change any of the details for the event. Once you are happy with the new details, simply submit the form and your calendar will be updated. If you have started editing the wrong event, simply save without changing or click the X in the rop right of the window.<br>
-      "Delete" will open a banner to confirm that you are are sure you would like to proceed with this action. If you are, simply click "OK" and the event will be removed from your calendar. <br>  
-        <b>This feature is currently bugged. It works as above, but not as intended.</b>
+      "Delete" will open a banner to confirm that you are are sure you would like to proceed with this action. If you are, simply click "OK" and the event will be removed from your calendar.  
       </p>
     </section>
 
     <section id="colourVis" class="help-section">
-      <h2>Why is my Calendar Red?</h2>
-      <p>Your calendar responds to your life, updating to let you know at a glance where your time is most precious. As you add more events to a day, it will change colour on your calendar to easily flag it as busier.
-          Days will start out white, and become coloured with darker shades of red based on how many hours of that day are occupied by your events.
+      <h2>What Does the Colour Mean</h2>
+      <p>Your calendar responds to your life, updating to let you know at a glance where your time is most precious. As you add more events to a day, it will change colour on your calendar to easily flag it as busier. Days will start out white, and become coloured on a gradient from green to red as more hours become occupied.
       </p>
     </section>
 
@@ -82,6 +81,16 @@
           Then it's simply a matter of clicking the "Add Friend" button to ship off the request for them to review. <br>
         If another user has sent you a friend request, these will appear just beneath the search box when you enter your profile. Simply click "Accept" if you want to link your account to the other user, or "Delete" if you do not.
       </p>
+    </section>
+
+    <section id="chat" class="help-section">
+      <h2>Using Chat</h2>
+      <p>On the <a href='/chat'>Chat</a> page you can send messages to your friends right here in the app! Select your friend in the dropdown menu on the left-hand side of the screen, then your conversation will appear in the main box. Chat like you would on any other service, typing your messages in the field beneath the chat history.</p>
+    </section>
+
+    <section id="friendCal" class="help-section">
+      <h2>Viewing a Friend's Calendar</h2>
+      <p>In the <a href='/visualisation'>Visualisation tab</a> you can view the calendars of your friends by selecting their username from the dropdown menu at the top. Don't worry about privacy, only events they have decided are public will be visible.</p>
     </section>
 
     <section id="createGroup" class="help-section">
